@@ -47,3 +47,29 @@ schema smoke test. The console is intentionally scaffolding until step 5.
 Outcome: step 2 complete. Commands: bash scripts/generate.sh; git diff --exit-code;
 dotnet restore --locked-mode; dotnet build --no-restore -c Release;
 dotnet test --no-build -c Release.
+
+## Step 3 — client foundations
+
+### Pass 1: transport correctness
+Reviewed request-scoped headers, escaped relative paths, JSON envelope classification,
+non-2xx/gateway responses and cancellation ownership. HTTP/API/protocol/network/timeout
+failures are distinct; no write retry loop exists. Tests exercise 200 logical failures,
+400 API errors, 403 gateway JSON, 502 non-JSON, 302 redirects and malformed success.
+Finding fixed: redirect detection now compares against the original immutable URI,
+not a possibly mutated request object.
+
+### Pass 2: isolation, secrets and lifecycle
+Shared-HttpClient tests prove simultaneous tenant A/B requests keep their own tokens
+and API keys and do not mutate default headers. Default headers are rejected. Owned
+clients disable redirects/cookies; injected transport's no-redirect/no-retry obligation
+is explicit. Exception strings and operation-only diagnostics exclude secret body/header
+values; optional diagnostic sink errors cannot alter request outcomes.
+Finding fixed: moved tokens into an independently locked per-instance session holder;
+disposal now prevents session resurrection, with exact-expiry and independent-clear tests.
+
+### Pass 3: test strength and maintainability
+Ran dotnet test -c Release: 22 tests passed, including shared transport isolation,
+expiry, disposal, cancellation versus timeout, response limits, URI validation and
+no retry after failed upload. The single transport bounds response reads and owns all
+HTTP error mapping; auth orchestration follows in step 4. No AWS/SDK runtime packages
+or simulator branches were introduced. Outcome: step 3 complete.
