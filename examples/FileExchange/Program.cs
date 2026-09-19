@@ -58,49 +58,82 @@ if (args.Contains("--driver"))
 
 if (args.Contains("--help"))
 {
-    Console.WriteLine("ISECure File Exchange — Experimental. Configure ISECURE_* environment variables; see examples/FileExchange/README.md.");
+    Console.WriteLine("ISECure File Exchange — Experimental. See examples/FileExchange/README.md for ISECURE_* configuration.");
+    Console.WriteLine("Default: data login, list, signed upload, poll feedback, exact download, logout.");
+    Console.WriteLine("--register-key <public-key.asc>: admin login, register a PGP authorization key, logout.");
     return;
 }
 try
 {
-    string Env(string name) => Environment.GetEnvironmentVariable("ISECURE_" + name) ?? throw new ArgumentException("Missing ISECURE_" + name);
+    string Env(string name) => Environment.GetEnvironmentVariable("ISECURE_" + name) is { Length: > 0 } value
+        ? value : throw new InvalidOperationException("Set ISECURE_" + name + "; see examples/FileExchange/README.md.");
+    var registeringKey = args.Length == 2 && args[0] == "--register-key";
+    if (args.Length > 0 && !registeringKey) throw new InvalidOperationException("Expected --register-key <public-key.asc>, --help, or no arguments.");
+    var mode = Enum.Parse<AccountMode>(Env("MODE"), true);
+    if (mode != (registeringKey ? AccountMode.Admin : AccountMode.Data))
+        throw new InvalidOperationException(registeringKey ? "Set ISECURE_MODE=admin to register a key." : "Set ISECURE_MODE=data for file exchange.");
+    // Validate local inputs before an authenticated request or payment upload.
+    var uploadFile = registeringKey ? "" : Env("UPLOAD_FILE");
+    var uploadType = registeringKey ? "" : Env("UPLOAD_TYPE");
+    var downloadType = registeringKey ? "" : Env("DOWNLOAD_TYPE");
+    var downloadFile = registeringKey ? "" : Env("DOWNLOAD_FILE");
+    var bytes = registeringKey ? [] : await File.ReadAllBytesAsync(uploadFile);
+    var signature = registeringKey ? "" : await File.ReadAllTextAsync(Env("SIGNATURE_FILE"));
+    var publicKey = registeringKey ? await File.ReadAllTextAsync(args[1]) : "";
+    if (!registeringKey && (bytes.Length == 0 || string.IsNullOrWhiteSpace(signature)))
+        throw new InvalidOperationException("ISECURE_UPLOAD_FILE and ISECURE_SIGNATURE_FILE must contain data.");
+    if (!registeringKey && (File.Exists(downloadFile) || Directory.Exists(downloadFile) ||
+        !Directory.Exists(Path.GetDirectoryName(Path.GetFullPath(downloadFile)))))
+        throw new InvalidOperationException("ISECURE_DOWNLOAD_FILE must be a new file in an existing directory.");
     using var client = new ISECureClient(new ClientOptions(new Uri(Env("BASE_URL")), await File.ReadAllTextAsync(Env("PUBLIC_KEY_FILE")),
-        Env("EMAIL"), Enum.Parse<AccountMode>(Env("MODE"), true), Env("API_KEY"), Env("BANK"), Env("COMPANY"), Env("NAME"), Env("PHONE")));
+        Env("EMAIL"), mode, Env("API_KEY"), Env("BANK"), Env("COMPANY"), Env("NAME"), Env("PHONE")));
     var state = await client.LoginAsync(Env("PASSWORD"));
-    if (state.Status == AuthStatus.NeedsMfaSelection) state = await client.SelectMfaTypeAsync(MfaMethod.Totp);
+    if (state.Status == AuthStatus.NeedsMfaSelection)
+        state = await client.SelectMfaTypeAsync(state.Methods.Contains(MfaMethod.Totp) ? MfaMethod.Totp : state.Methods[0]);
     if (state.Status == AuthStatus.NeedsMfa) state = await client.SubmitMfaCodeAsync(Env("MFA_CODE"));
     if (state.Status != AuthStatus.Authenticated) throw new InvalidOperationException("Authentication did not complete: " + state.Status);
     try
     {
-        var before = await client.ListFilesAsync(Env("DOWNLOAD_TYPE"), "ALL");
+        if (registeringKey)
+        {
+            await client.UploadPgpKeyAsync(publicKey, PgpKeyPurpose.Authorize);
+            Console.WriteLine("PGP authorization key registered.");
+            return;
+        }
+        var before = await client.ListFilesAsync(downloadType, "ALL");
         Console.WriteLine($"Listed {before.FileDescriptors.Count} files.");
-        var bytes = await File.ReadAllBytesAsync(Env("UPLOAD_FILE"));
-        var signature = await File.ReadAllTextAsync(Env("SIGNATURE_FILE"));
-        await client.UploadFileAsync(bytes, Path.GetFileName(Env("UPLOAD_FILE")), Env("UPLOAD_TYPE"), signature);
+        await client.UploadFileAsync(bytes, Path.GetFileName(uploadFile), uploadType, signature);
         Console.WriteLine($"Uploaded {bytes.Length} bytes; SHA-256 {Convert.ToHexStringLower(SHA256.HashData(bytes))}.");
         var prior = before.FileDescriptors.Select(x => x.FileReference).ToHashSet();
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60));
         while (true)
         {
-            var listed = await client.ListFilesAsync(Env("DOWNLOAD_TYPE"), "NEW", timeout.Token);
+            var listed = await client.ListFilesAsync(downloadType, "NEW", timeout.Token);
             var descriptor = listed.FileDescriptors.FirstOrDefault(x => !prior.Contains(x.FileReference));
             if (descriptor is not null)
             {
                 var downloaded = await client.DownloadFileAsync(descriptor.FileType, descriptor.FileReference, timeout.Token);
                 var repeated = await client.DownloadFileAsync(descriptor.FileType, descriptor.FileReference, timeout.Token);
                 if (!downloaded.Bytes.Span.SequenceEqual(repeated.Bytes.Span)) throw new InvalidOperationException("Repeated download bytes differ.");
-                await File.WriteAllBytesAsync(Env("DOWNLOAD_FILE"), downloaded.Bytes.ToArray(), timeout.Token);
+                await using var output = new FileStream(downloadFile, FileMode.CreateNew, FileAccess.Write);
+                await output.WriteAsync(downloaded.Bytes, timeout.Token);
                 Console.WriteLine($"Downloaded {downloaded.Bytes.Length} bytes; SHA-256 {Convert.ToHexStringLower(SHA256.HashData(downloaded.Bytes.Span))}.");
                 break;
             }
             await Task.Delay(1000, timeout.Token);
         }
     }
-    finally { await client.LogoutAsync(); }
+    finally
+    {
+        try { await client.LogoutAsync(); }
+        catch (ISecureException e) { Console.Error.WriteLine($"Local session cleared; server logout failed ({e.GetType().Name})."); }
+    }
 }
 catch (Exception e)
 {
-    Console.Error.WriteLine(e is ISecureException ? e.Message : "File exchange example failed: " + e.GetType().Name);
+    Console.Error.WriteLine(e is ISecureException or InvalidOperationException ? e.Message : "File exchange example failed: " + e.GetType().Name);
+    if (e is OperationCanceledException or ISecureTimeoutException or ISecureNetworkException or ISecureProtocolException)
+        Console.Error.WriteLine("The upload may already have been accepted. Check its status before submitting it again.");
     Environment.ExitCode = 1;
 }
 

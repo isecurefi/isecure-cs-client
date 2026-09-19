@@ -138,7 +138,7 @@ async function login(t, mode) {
     requireThat(result.Status === 'NeedsMfa' && result.Method === 'Totp', 'ADMIN_MFA_NOT_REQUIRED');
     result = await cs(id, 'mfa', { code: await code(t.totpSecret) });
   }
-  requireThat(result.Status === 'Authenticated', 'CS_LOGIN_FAILED');
+  requireThat(result.Status === 'Authenticated', `CS_LOGIN_FAILED_${mode}_${result.Status}_${result.FailureReason || 'none'}_${result.ResponseCode || 'none'}`);
 }
 async function http(t, method, route, body, token) {
   const response = await fetch(base + route, { method, headers: { 'Content-Type': 'application/json', 'x-api-key': t.apiKey, ...(token ? { Authorization: token } : {}) }, body: body ? JSON.stringify(body) : undefined, redirect: 'error', signal: AbortSignal.timeout(30000) });
@@ -192,6 +192,23 @@ async function exactDownload(t, descriptor, token, label) {
   return bytes;
 }
 
+function exampleEnvironment(t, mode) {
+  return { ISECURE_BASE_URL: base, ISECURE_PUBLIC_KEY_FILE: path.join(root, 'scripts/fixtures/test-public.pem'),
+    ISECURE_EMAIL: t.email, ISECURE_MODE: mode, ISECURE_API_KEY: t.apiKey, ISECURE_BANK: 'simulator',
+    ISECURE_COMPANY: t.company, ISECURE_NAME: t.name, ISECURE_PHONE: t.phone, ISECURE_PASSWORD: fixture.password };
+}
+async function example(project, args, settings) {
+  const env = { ...Object.fromEntries(Object.entries(process.env).filter(([name]) => !name.startsWith('ISECURE_'))), ...settings };
+  return new Promise((resolve, reject) => {
+    const child = spawn('dotnet', [path.join(root, `examples/${project}/bin/Release/net10.0/${project}.dll`), ...args], { cwd: root, env, stdio: ['ignore', 'pipe', 'ignore'] });
+    let output = '';
+    child.stdout.on('data', chunk => { output = (output + chunk).slice(-8192); });
+    const timer = setTimeout(() => { child.kill(); reject(new Error('EXAMPLE_TIMEOUT_' + project)); }, 120000);
+    child.on('error', () => { clearTimeout(timer); reject(new Error('EXAMPLE_START_FAILED_' + project)); });
+    child.on('exit', status => { clearTimeout(timer); status === 0 ? resolve(output) : reject(new Error('EXAMPLE_FAILED_' + project)); });
+  });
+}
+
 async function runConsoleExample(t, pgp) {
   const template = fs.readFileSync(path.join(root, 'scripts/fixtures/synthetic-pain.001.001.09.xml'), 'utf8');
   let sequence = 0;
@@ -219,6 +236,8 @@ async function runConsoleExample(t, pgp) {
   requireThat(returned.toString().includes('pain.002.001.10') && returned.toString().includes(runId), 'CONSOLE_FEEDBACK_INVALID');
   evidence.consoleExample = { uploadBytes: bytes.length, uploadSha256: sha(bytes), downloadedBytes: returned.length, downloadedSha256: sha(returned) };
   // Console logout may invalidate other sessions for this user. Authenticate afresh.
+  // Cognito can reject a token issued in the same second as global sign-out.
+  await sleep(1100);
   await login(t, 'data');
   pass('ordinary C# console login/list/signed upload/download/logout workflow');
 }
@@ -245,6 +264,11 @@ async function qualify() {
   }
   pass('C# autonomous TOTP verification and admin/data authentication for two tenants');
   const [primary, secondary] = fixture.tenants;
+  const firstCall = await example('Quickstart', [], exampleEnvironment(primary, 'data'));
+  requireThat(firstCall.includes('Connected. 0 certificate(s) visible.'), 'QUICKSTART_FIRST_CALL_INVALID');
+  await sleep(1100);
+  await login(primary, 'data');
+  pass('README quickstart authenticates a fresh account without bank certificates');
   await denied(primary, 'missing entitlement denial');
   await denied(secondary, 'independent second tenant missing entitlement denial');
   await renewal(primary, '01');
@@ -276,16 +300,28 @@ async function qualify() {
   pass('exact initial download/replay bytes and cross-tenant reference denial');
   const pgp = await openpgp.generateKey({ type: 'rsa', rsaBits: 2048, userIDs: [{ name: 'Synthetic CSharp', email: primary.email }] });
   fixture.pgp = pgp; save(checkpointFile, fixture);
-  await cs('primary-admin', 'uploadKey', { publicKey: pgp.publicKey });
+  const publicKeyPath = path.join(privateRoot, 'signing-public.asc'), privateKeyPath = path.join(privateRoot, 'signing-private.asc');
+  fs.writeFileSync(publicKeyPath, pgp.publicKey, { mode: 0o600 });
+  fs.writeFileSync(privateKeyPath, pgp.privateKey, { mode: 0o600 });
+  const registered = await example('FileExchange', ['--register-key', publicKeyPath], {
+    ...exampleEnvironment(primary, 'admin'), ISECURE_MFA_CODE: await code(primary.totpSecret) });
+  requireThat(registered.includes('PGP authorization key registered.'), 'PUBLIC_KEY_EXAMPLE_FAILED');
+  await sleep(1100);
+  await login(primary, 'admin');
+  pass('public admin key-registration command completes autonomous MFA');
   const bytes = fs.readFileSync(path.join(root, 'scripts/fixtures/synthetic-pain.001.001.09.xml'));
-  const signature = await openpgp.sign({ message: await openpgp.createMessage({ binary: bytes }), signingKeys: await openpgp.readPrivateKey({ armoredKey: pgp.privateKey }), detached: true });
+  const signaturePath = path.join(privateRoot, 'csharp-signature.asc');
+  const signingFingerprint = (await (await openpgp.readKey({ armoredKey: pgp.publicKey })).getSigningKey()).getFingerprint();
+  await example('SignFile', [path.join(root, 'scripts/fixtures/synthetic-pain.001.001.09.xml'), privateKeyPath, signaturePath], {
+    ISECURE_PGP_SIGNING_FINGERPRINT: signingFingerprint });
+  const signature = fs.readFileSync(signaturePath, 'utf8');
   const verified = await openpgp.verify({ message: await openpgp.createMessage({ binary: bytes }), signature: await openpgp.readSignature({ armoredSignature: signature }), verificationKeys: await openpgp.readKey({ armoredKey: pgp.publicKey }) });
   await verified.signatures[0].verified;
   evidence.upload = { bytes: bytes.length, sha256: sha(bytes), signatureSha256: sha(signature) };
   await cs('primary-data', 'upload', { contents: bytes.toString('base64'), fileName: runId + '.xml', fileType: 'pain.001.001.09', signature });
   const bad = await driver.call('primary-data', 'upload', { contents: Buffer.concat([bytes, Buffer.from(' ')]).toString('base64'), fileName: runId + '-tampered.xml', fileType: 'pain.001.001.09', signature });
   requireThat(!bad.ok && bad.error === 'api' && bad.code === '01', 'TAMPERED_SIGNATURE_ACCEPTED');
-  pass('C# PGP key upload, independently verified signature, signed upload and tampered-byte rejection');
+  pass('C# PGP signing example, independently verified signature, signed upload and tampered-byte rejection');
   for (const type of ['pain.002.001.10', 'camt.054.001.02', 'camt.053.001.02']) {
     let descriptor; const deadline = Date.now() + 60000;
     do {

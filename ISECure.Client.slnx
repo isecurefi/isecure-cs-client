@@ -1,5 +1,8 @@
 <Solution>
   <Folder Name="/examples/">
+    <Project Path="examples/Quickstart/Quickstart.csproj" />
+    <Project Path="examples/Recipes/Recipes.csproj" />
+    <Project Path="examples/SignFile/SignFile.csproj" />
     <Project Path="examples/FileExchange/FileExchange.csproj" />
   </Folder>
   <Folder Name="/src/">

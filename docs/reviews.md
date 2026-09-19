@@ -139,3 +139,9 @@ Recovery was rerun against the retained checkpoint: both entitlements remained s
 at revision 2 and the original live evidence was preserved. Reviewed supported scope,
 usage/qualification instructions and the private credential exclusions together.
 Outcome: step 5 complete, with all three review passes recorded for every requested step.
+
+## Follow-up developer experience review
+
+The original records above describe their historical commits. The current evidence
+was refreshed for the follow-up [DX review](dx-review.md), including the public
+quickstart, admin key-registration command and standalone C# signing example.

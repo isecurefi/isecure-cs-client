@@ -1,78 +1,86 @@
 {
   "schemaVersion": 1,
-  "runId": "cs-40f9f03771648a5d",
-  "startedAt": "2026-09-19T18:39:58.556Z",
+  "runId": "cs-231cedc0553ca2c9",
+  "startedAt": "2026-09-19T19:54:23.944Z",
   "account": "589434896614",
   "region": "eu-west-1",
   "stage": "gpgtest",
   "baseUrl": "https://ws-api.test.isecure.fi/v2",
-  "runtimeSourceSha256": "193ec3c44b2e57915803b412b550f2afce910f4a862bb651567d575365567884",
+  "runtimeSourceSha256": "51fc7372486a9bc8271d8630205517e4e2130dbc1f68bbd4dbf24f70dfa149ce",
   "teardownOnly": false,
-  "sourceRevision": "d6aeaf6aae0f8a19b104f37f3e20ceff78c471dc",
+  "sourceRevision": "1537d1e4351a188463f48c96ee7bf688e7283da0",
   "checks": [
     {
       "label": "guarded account, region and gpgtest domain mapping",
-      "at": "2026-09-19T18:39:59.526Z"
+      "at": "2026-09-19T19:54:25.013Z"
     },
     {
       "label": "C# autonomous TOTP verification and admin/data authentication for two tenants",
-      "at": "2026-09-19T18:41:02.325Z"
+      "at": "2026-09-19T19:55:31.917Z"
+    },
+    {
+      "label": "README quickstart authenticates a fresh account without bank certificates",
+      "at": "2026-09-19T19:55:35.837Z"
     },
     {
       "label": "missing entitlement denial",
-      "at": "2026-09-19T18:41:03.608Z"
+      "at": "2026-09-19T19:55:36.065Z"
     },
     {
       "label": "independent second tenant missing entitlement denial",
-      "at": "2026-09-19T18:41:03.811Z"
+      "at": "2026-09-19T19:55:36.207Z"
     },
     {
       "label": "missing entitlement denies simulator renewal",
-      "at": "2026-09-19T18:41:04.954Z"
+      "at": "2026-09-19T19:55:36.372Z"
     },
     {
       "label": "enabling primary does not grant second tenant access",
-      "at": "2026-09-19T18:41:06.891Z"
+      "at": "2026-09-19T19:55:38.295Z"
     },
     {
       "label": "enabled entitlement after cache expiry and certificate discovery",
-      "at": "2026-09-19T18:42:19.444Z"
+      "at": "2026-09-19T19:56:49.954Z"
     },
     {
       "label": "exact initial download/replay bytes and cross-tenant reference denial",
-      "at": "2026-09-19T18:42:24.661Z"
+      "at": "2026-09-19T19:56:54.852Z"
     },
     {
-      "label": "C# PGP key upload, independently verified signature, signed upload and tampered-byte rejection",
-      "at": "2026-09-19T18:42:28.124Z"
+      "label": "public admin key-registration command completes autonomous MFA",
+      "at": "2026-09-19T19:57:31.198Z"
+    },
+    {
+      "label": "C# PGP signing example, independently verified signature, signed upload and tampered-byte rejection",
+      "at": "2026-09-19T19:57:33.582Z"
     },
     {
       "label": "C# feedback list/download/replay matches independent HTTP bytes and digests",
-      "at": "2026-09-19T18:42:35.185Z"
+      "at": "2026-09-19T19:57:40.829Z"
     },
     {
       "label": "restored gpgtest renewal artifact renews an entitled synthetic certificate",
-      "at": "2026-09-19T18:42:37.028Z"
+      "at": "2026-09-19T19:57:42.612Z"
     },
     {
       "label": "ordinary C# console login/list/signed upload/download/logout workflow",
-      "at": "2026-09-19T18:42:42.391Z"
+      "at": "2026-09-19T19:57:49.594Z"
     },
     {
       "label": "suspended entitlement denial after cache expiry",
-      "at": "2026-09-19T18:43:45.379Z"
+      "at": "2026-09-19T19:58:52.444Z"
     },
     {
       "label": "suspended entitlement denies simulator renewal",
-      "at": "2026-09-19T18:43:45.533Z"
+      "at": "2026-09-19T19:58:52.607Z"
     },
     {
       "label": "suspending primary leaves second tenant access intact",
-      "at": "2026-09-19T18:43:46.388Z"
+      "at": "2026-09-19T19:58:53.474Z"
     },
     {
       "label": "C# logout clears local authority",
-      "at": "2026-09-19T18:43:48.070Z"
+      "at": "2026-09-19T19:58:55.065Z"
     }
   ],
   "files": [
@@ -80,31 +88,31 @@
       "label": "primary initial statement",
       "type": "camt.053.001.02",
       "bytes": 950,
-      "sha256": "15af23e59f83fc9b516cab600b4227770500773dffc15a31de9d208b6b5612d2"
+      "sha256": "a90e5a5a48d65a02b894b5f80bbc364ed92d32d555370394246db6938eaafc75"
     },
     {
       "label": "secondary initial statement",
       "type": "camt.053.001.02",
       "bytes": 950,
-      "sha256": "b5f3b8743cd167ff12fb7d423351a43ad9337cfa234ed1547da1776d269bc47b"
+      "sha256": "8e7b9a72d86ef88b77893f2aaabdc284081d7ed3e0ecb6f46c566949ab737993"
     },
     {
       "label": "pain.002.001.10 feedback",
       "type": "pain.002.001.10",
       "bytes": 1413,
-      "sha256": "524872895fb4a9083392bab1a00f24cbfe7dbdcfe8f44efffd81e61892a28ee8"
+      "sha256": "ae1ad53cea68c26eda24f32c46ef7006061a1aaf795bc2e46f2e5da25b556e3c"
     },
     {
       "label": "camt.054.001.02 feedback",
       "type": "camt.054.001.02",
       "bytes": 2203,
-      "sha256": "110ba8aa59b8eaad2ccdea0054a7e05dabe6c72ea26f2fad786bf12b0988246a"
+      "sha256": "df14617d13f54685dc89c00e58276c54b446f2c105f1e6457dd93f817a6b82f0"
     },
     {
       "label": "camt.053.001.02 feedback",
       "type": "camt.053.001.02",
       "bytes": 2492,
-      "sha256": "3f92a554f6c56ccd8ff30b240e0aa360c5487934b442467a1c2bb987947e09f3"
+      "sha256": "74b63a7864076f4907f98f9bccd9852c0674594471afc72641bf9ceedf4122d0"
     }
   ],
   "teardown": [
@@ -130,14 +138,14 @@
   "upload": {
     "bytes": 1541,
     "sha256": "f0b4b36d2499efbebc98330528b4c8fb7e489a5f52893e79a7d5315639c8b7ea",
-    "signatureSha256": "7d73ca42757eafeb5a223ef35f9bd58a114f968620b364eff27572ae1414a552"
+    "signatureSha256": "2f8b6fd42db82f4f2a3b4bea3bc98ea2fd42ec17ee173de7033b9e5f6c44c942"
   },
   "consoleExample": {
     "uploadBytes": 1553,
-    "uploadSha256": "18ef52855157501a38b3e1951f81906118b51969bf3ad50f6c40e0864aa21410",
+    "uploadSha256": "a62c061b5502ebe5fe9b3f6a318bf2ce012d73b26e3ac02f9b3631162e6a259f",
     "downloadedBytes": 1432,
-    "downloadedSha256": "3b25d8d60c8b12822736c7ab7fda78ca41b835b3d47fcd902b7872964845bb9a"
+    "downloadedSha256": "7a6872e78bbff2a95c0e9ebb36e840b22f3873b9dd2b02403cf7deb770047f4d"
   },
-  "completedAt": "2026-09-19T18:43:50.451Z",
+  "completedAt": "2026-09-19T19:58:56.825Z",
   "passed": true
 }

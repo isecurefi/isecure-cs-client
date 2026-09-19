@@ -16,9 +16,11 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: node --check scripts/qualify-gpgtest.mjs
+      - run: python3 scripts/check-docs.py
       - run: bash scripts/generate.sh
       - run: git diff --exit-code -- src/ISECure.Client/Generated
       - run: dotnet restore --locked-mode
       - run: dotnet build --no-restore -c Release
+      - run: node scripts/check-signing-example.mjs
       - run: dotnet test --no-build -c Release
       - run: dotnet pack src/ISECure.Client --no-build -c Release -o artifacts

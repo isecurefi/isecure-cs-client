@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ISECure.Client\ISECure.Client.csproj" />
+    <ProjectReference Include="../../examples/Recipes/Recipes.csproj" />
   </ItemGroup>
 
 </Project>

@@ -14,7 +14,13 @@ public sealed partial class ISECureClient : IDisposable
     private readonly ClientSession _authenticated;
     private volatile bool _disposed;
 
-    /// <summary>Injected HttpClient must not have default credentials/headers, redirects or automatic write retries.</summary>
+    /// <summary>Creates an isolated account session.</summary>
+    /// <param name="options">Immutable account, tenant, bank and environment configuration.</param>
+    /// <param name="httpClient">Optional caller-owned HTTP client with no default headers/credentials, cookies, redirects or retries.</param>
+    /// <param name="timeProvider">Optional clock for session expiry; defaults to TimeProvider.System.</param>
+    /// <param name="diagnostic">Optional operation/status/outcome callback. No payloads or credentials are emitted; callback exceptions are ignored.</param>
+    /// <remarks>The client serializes its own operations. Instances own independent local state; server logout may revoke other sessions of the same account/role. Dispose the SDK client when finished.</remarks>
+    /// <exception cref="ArgumentException">The injected HTTP client contains default headers.</exception>
     public ISECureClient(ClientOptions options, HttpClient? httpClient = null,
         TimeProvider? timeProvider = null, Action<SdkDiagnostic>? diagnostic = null)
     {
@@ -47,6 +53,7 @@ public sealed partial class ISECureClient : IDisposable
     }
     private (string ApiKey, string IdToken) RequireSession(string operation) => _authenticated.Require(operation);
     private void ClearSession() => _authenticated.Clear();
+    /// <summary>Clears local secrets and disposes an owned HTTP client. Does not call server logout.</summary>
     public void Dispose()
     {
         lock (_authSync)
@@ -57,5 +64,6 @@ public sealed partial class ISECureClient : IDisposable
         }
         if (_ownsHttp) _http.Dispose();
     }
+    /// <summary>Returns a fixed label without account details or credentials.</summary>
     public override string ToString() => "ISECureClient";
 }

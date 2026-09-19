@@ -14,6 +14,13 @@ public sealed partial class ISECureClient
     private AuthResult _auth = new(AuthStatus.Unauthenticated);
     // Auth state is consumed through returned immutable result objects. No secret session snapshot is retained publicly.
 
+    /// <summary>Registers the configured account using the server password challenge.</summary>
+    /// <param name="password">New account password; encrypted for transport and not retained by the client.</param>
+    /// <param name="cancellationToken">Cancels waiting for the client and the HTTP request.</param>
+    /// <returns>Registration response, including the tenant API key. Registration does not log in.</returns>
+    /// <remarks>Use API key "0" only when creating a new owner account. A returned key is adopted by this client; persist it for subsequent client instances.</remarks>
+    /// <exception cref="ISecureException">A transport, protocol or local authentication-state error occurred.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancelled the operation.</exception>
     public Task<RegisterResp> RegisterAsync(string password, CancellationToken cancellationToken = default) => ExclusiveAsync(async () =>
     {
         ResetAuthentication();
@@ -29,6 +36,13 @@ public sealed partial class ISECureClient
         return registered;
     }, cancellationToken);
 
+    /// <summary>Starts a login attempt and replaces previous authentication state.</summary>
+    /// <param name="password">Account password; encrypted for transport and not retained by the client.</param>
+    /// <param name="cancellationToken">Cancels waiting for the client and the HTTP request.</param>
+    /// <returns>Authenticated, a required verification/MFA step, or Failed. Check Status before protected operations.</returns>
+    /// <remarks>API authentication refusals are returned as Failed; transport and malformed-response errors throw. No automatic refresh or prompting occurs.</remarks>
+    /// <exception cref="ISecureException">A transport, protocol or local authentication-state error occurred.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancelled the operation.</exception>
     public Task<AuthResult> LoginAsync(string password, CancellationToken cancellationToken = default) => ExclusiveAsync(async () =>
     {
         ResetAuthentication();
@@ -41,6 +55,14 @@ public sealed partial class ISECureClient
         }).ConfigureAwait(false);
     }, cancellationToken);
 
+    /// <summary>Answers the current SMS or TOTP challenge.</summary>
+    /// <param name="code">Six ASCII digits from the requested MFA method.</param>
+    /// <param name="setupTotp">Request TOTP enrollment details when completing an eligible SMS challenge.</param>
+    /// <param name="cancellationToken">Cancels waiting for the client and the HTTP request.</param>
+    /// <returns>Next authentication state. TotpEnrollment may contain caller-owned enrollment secrets.</returns>
+    /// <remarks>Requires NeedsMfa. A failed server attempt clears pending state; start a new login before trying again.</remarks>
+    /// <exception cref="ISecureException">A transport, protocol or local authentication-state error occurred.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancelled the operation.</exception>
     public Task<AuthResult> SubmitMfaCodeAsync(string code, bool setupTotp = false, CancellationToken cancellationToken = default) => ExclusiveAsync(async () =>
     {
         ValidateCode(code);
@@ -49,6 +71,13 @@ public sealed partial class ISECureClient
         return await AuthenticationAttemptAsync(() => _transport.SendAsync("LoginMFA", HttpMethod.Put, SessionPath + "/mfacode", request, _apiKey, null, cancellationToken)).ConfigureAwait(false);
     }, cancellationToken);
 
+    /// <summary>Selects a factor offered by the current login challenge.</summary>
+    /// <param name="method">One of AuthResult.Methods returned with NeedsMfaSelection.</param>
+    /// <param name="cancellationToken">Cancels waiting for the client and the HTTP request.</param>
+    /// <returns>Next authentication state, usually NeedsMfa.</returns>
+    /// <remarks>Requires NeedsMfaSelection. Never assume TOTP is offered; inspect Methods.</remarks>
+    /// <exception cref="ISecureException">A transport, protocol or local authentication-state error occurred.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancelled the operation.</exception>
     public Task<AuthResult> SelectMfaTypeAsync(MfaMethod method, CancellationToken cancellationToken = default) => ExclusiveAsync(async () =>
     {
         if (_auth.Status != AuthStatus.NeedsMfaSelection || !_auth.Methods.Contains(method) || string.IsNullOrEmpty(_mfaSession))
@@ -57,6 +86,13 @@ public sealed partial class ISECureClient
         return await AuthenticationAttemptAsync(() => _transport.SendAsync("SelectMFA", HttpMethod.Put, SessionPath + "/selectmfa", request, _apiKey, null, cancellationToken)).ConfigureAwait(false);
     }, cancellationToken);
 
+    /// <summary>Submits the email verification code for the pending login.</summary>
+    /// <param name="code">Six ASCII digits from the verification email.</param>
+    /// <param name="cancellationToken">Cancels waiting for the client and the HTTP request.</param>
+    /// <returns>VerificationAccepted or Failed. After success, call LoginAsync again.</returns>
+    /// <remarks>Requires NeedsEmailVerification. Verification alone does not authenticate the client.</remarks>
+    /// <exception cref="ISecureException">A transport, protocol or local authentication-state error occurred.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancelled the operation.</exception>
     public Task<AuthResult> VerifyEmailAsync(string code, CancellationToken cancellationToken = default) => ExclusiveAsync(async () =>
     {
         ValidateCode(code);
@@ -65,6 +101,13 @@ public sealed partial class ISECureClient
             new VerifyEmailReq { Code = code, AccessToken = _verificationAccessToken }, VerificationKind.Email, cancellationToken).ConfigureAwait(false);
     }, cancellationToken);
 
+    /// <summary>Submits the phone verification code for the pending login.</summary>
+    /// <param name="code">Six ASCII digits sent to the configured phone number.</param>
+    /// <param name="cancellationToken">Cancels waiting for the client and the HTTP request.</param>
+    /// <returns>VerificationAccepted or Failed. After success, call LoginAsync again.</returns>
+    /// <remarks>Requires NeedsPhoneVerification. The configured phone must match the account.</remarks>
+    /// <exception cref="ISecureException">A transport, protocol or local authentication-state error occurred.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancelled the operation.</exception>
     public Task<AuthResult> VerifyPhoneAsync(string code, CancellationToken cancellationToken = default) => ExclusiveAsync(async () =>
     {
         ValidateCode(code);
@@ -74,6 +117,14 @@ public sealed partial class ISECureClient
     }, cancellationToken);
 
     // Also supports autonomous synthetic enrollment with a caller-supplied, short-lived access token.
+    /// <summary>Confirms an authenticator enrollment with its first code.</summary>
+    /// <param name="accessToken">Short-lived access token from AuthResult.TotpEnrollment; never log or persist it.</param>
+    /// <param name="code">Six ASCII digits from the newly configured authenticator.</param>
+    /// <param name="cancellationToken">Cancels waiting for the client and the HTTP request.</param>
+    /// <returns>VerificationAccepted or Failed; this call does not establish a new login.</returns>
+    /// <remarks>Successful enrollment confirmation preserves an existing login. Failed confirmation clears authentication state.</remarks>
+    /// <exception cref="ISecureException">A transport, protocol or local authentication-state error occurred.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancelled the operation.</exception>
     public Task<AuthResult> VerifyTotpAsync(string accessToken, string code, CancellationToken cancellationToken = default) => ExclusiveAsync(async () =>
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(accessToken); ValidateCode(code);
@@ -81,6 +132,12 @@ public sealed partial class ISECureClient
             new VerifyTOTPReq { AccessToken = accessToken, Code = code }, VerificationKind.Totp, cancellationToken).ConfigureAwait(false);
     }, cancellationToken);
 
+    /// <summary>Clears local authentication and requests server logout when a token is available.</summary>
+    /// <param name="cancellationToken">Cancels the HTTP request; local clearing still runs, even if already cancelled.</param>
+    /// <returns>API logout response, or a local success response when no authenticated session existed.</returns>
+    /// <remarks>Local state is cleared before the request and stays cleared if logout fails. Expired tokens are still sent for server logout; no automatic retry occurs.</remarks>
+    /// <exception cref="ISecureException">A transport, protocol or local authentication-state error occurred.</exception>
+    /// <exception cref="OperationCanceledException">The caller cancelled the operation.</exception>
     public Task<Response> LogoutAsync(CancellationToken cancellationToken = default) => ExclusiveAsync(async () =>
     {
         var credentials = _authenticated.TakeForLogout();
