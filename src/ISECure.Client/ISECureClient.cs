@@ -49,8 +49,12 @@ public sealed partial class ISECureClient : IDisposable
     private void ClearSession() => _authenticated.Clear();
     public void Dispose()
     {
-        _disposed = true;
-        _authenticated.Dispose();
+        lock (_authSync)
+        {
+            _disposed = true;
+            ResetAuthentication();
+            _authenticated.Dispose();
+        }
         if (_ownsHttp) _http.Dispose();
     }
     public override string ToString() => "ISECureClient";

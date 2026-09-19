@@ -29,6 +29,15 @@ internal sealed class ClientSession(TimeProvider time) : IDisposable
             return (_tenant, _token);
         }
     }
+    internal (string ApiKey, string IdToken)? TakeForLogout()
+    {
+        lock (_sync)
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            (string, string)? result = _tenant is not null && _token is not null ? (_tenant, _token) : null;
+            Clear(); return result;
+        }
+    }
     internal void Clear() { lock (_sync) { _token = null; _tenant = null; _expires = default; } }
     public void Dispose() { lock (_sync) { _disposed = true; Clear(); } }
     public override string ToString() => "ClientSession";

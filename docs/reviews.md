@@ -73,3 +73,31 @@ expiry, disposal, cancellation versus timeout, response limits, URI validation a
 no retry after failed upload. The single transport bounds response reads and owns all
 HTTP error mapping; auth orchestration follows in step 4. No AWS/SDK runtime packages
 or simulator branches were introduced. Outcome: step 3 complete.
+
+## Step 4 — authentication
+
+### Pass 1: protocol and state transitions
+Compared requests and state classification to the TS client and login Lambda source.
+Registration adopts a new owner API key only when configured with 0. MFA echoes the
+original challenge/session without fetching another challenge; selection uses the
+newly returned session. Phone/email verification precedes MFA heuristics. Enrollment
+secrets are returned to the caller without being retained in the SDK auth snapshot.
+Finding fixed: the Lambda emits numeric ExpiresIn although Swagger declares string.
+Both integer and digit-string forms now work; invalid/non-positive expiry fails closed.
+
+### Pass 2: secrets, invalidation and concurrency
+Tests decrypt generated ciphertext using RSA-OAEP/SHA-1 and prove UTF-8 and both public
+PEM formats. Malformed challenges and oversized UTF-8 passwords are rejected. Unknown
+MFA factors, missing tokens, conflicting tenants and incomplete responses cannot grant
+authority. Re-login clears old authority; failed MFA/verification clears pending secrets.
+Findings fixed: synchronize auth publication with disposal; serialize logout even when
+its token is already cancelled, so local clearing still happens. Tests cover dispose
+mid-login, concurrent login/logout and failed/cancelled logout.
+
+### Pass 3: coverage and maintainability
+Ran dotnet test -c Release: 53 tests passed. Coverage includes registration, SMS,
+TOTP, selection, enrollment, independent verification calls, failed/expired codes,
+phone/email re-login, unknown challenges, tenant mismatch, expiry and session lifecycle.
+Pure challenge encryption and small typed state results keep secrets out of ToString
+and diagnostics. No prompt loop or AWS/simulator policy entered the library.
+Outcome: step 4 complete; live environment qualification follows in step 5.
