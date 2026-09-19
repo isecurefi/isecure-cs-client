@@ -44,4 +44,16 @@ The checked-in evidence's runtime digest was independently recomputed and matche
 
 ## Pass 3: clean-checkout and packaging verification
 
-Final clean-checkout verification is pending before this change is pushed.
+Cloned candidate `d017ba1` with `--no-local` into an empty temporary directory.
+Pinned contract/NSwag generation produced no diff. Locked restore and Release build
+passed with zero warnings/errors. All 70 tests, all nine compiled documentation
+snippets, local documentation links, runner syntax and independent offline signing/
+CLI checks passed. `npm ci --ignore-scripts` reported zero known vulnerabilities.
+The checkout remained clean after these checks.
+
+Created and inspected `ISECure.Client.0.1.0-preview.1.nupkg`: it includes the DLL,
+README and IntelliSense XML, with no runtime package dependencies or fixture secrets.
+The separate consumer application check also passed. The library remains experimental;
+unsupported operations and the absence of a published NuGet release are explicit.
+Outcome: the identified onboarding, examples and IntelliSense gaps are resolved for
+the experimental public preview. Publication remains a separate repository action.
