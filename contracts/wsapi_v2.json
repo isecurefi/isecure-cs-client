@@ -1,0 +1,3995 @@
+{
+  "basePath": "/v2",
+  "definitions": {
+    "AccountDeletionDescriptor": {
+      "properties": {
+        "Account": {
+          "type": "boolean"
+        },
+        "AdminUser": {
+          "type": "boolean"
+        },
+        "DataUser": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "AdminUser",
+        "DataUser",
+        "Account"
+      ],
+      "type": "object"
+    },
+    "AccountDescriptor": {
+      "properties": {
+        "AccountType": {
+          "enum": [
+            "integrator",
+            "customer"
+          ],
+          "type": "string"
+        },
+        "AdminMode": {
+          "enum": [
+            "registered",
+            "unregistered"
+          ],
+          "type": "string"
+        },
+        "Certs": {
+          "items": {
+            "$ref": "#/definitions/CertDescriptor"
+          },
+          "type": "array"
+        },
+        "DataMode": {
+          "enum": [
+            "registered",
+            "unregistered"
+          ],
+          "type": "string"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "Export": {
+          "enum": [
+            "disabled",
+            "allowed"
+          ],
+          "type": "string"
+        },
+        "LinkedTo": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "Retired": {
+          "items": {
+            "$ref": "#/definitions/RetiredCertDescriptor"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "Name",
+        "Email",
+        "Phone",
+        "Export",
+        "Certs"
+      ],
+      "type": "object"
+    },
+    "BankConnectionCertificateDescriptor": {
+      "properties": {
+        "Expires": {
+          "type": "string"
+        },
+        "Purpose": {
+          "enum": [
+            "signing",
+            "encryption"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "Purpose",
+        "Expires"
+      ],
+      "type": "object"
+    },
+    "BankConnectionDescriptor": {
+      "properties": {
+        "Access": {
+          "enum": [
+            "direct",
+            "shared"
+          ],
+          "type": "string"
+        },
+        "Bank": {
+          "type": "string"
+        },
+        "Certificates": {
+          "items": {
+            "$ref": "#/definitions/BankConnectionCertificateDescriptor"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "Bank",
+        "Access",
+        "Certificates"
+      ],
+      "type": "object"
+    },
+    "CertDescriptor": {
+      "properties": {
+        "CertName": {
+          "type": "string"
+        },
+        "Expires": {
+          "type": "string"
+        },
+        "Issuer": {
+          "type": "string"
+        },
+        "PEM": {
+          "type": "string"
+        },
+        "Serial": {
+          "type": "string"
+        },
+        "Subject": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "CertName",
+        "Expires",
+        "Subject",
+        "Issuer",
+        "Serial",
+        "PEM"
+      ],
+      "type": "object"
+    },
+    "CertsAndKeys": {
+      "properties": {
+        "Certificate": {
+          "type": "string"
+        },
+        "EncryptedPrivateKey": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Certificate",
+        "EncryptedPrivateKey"
+      ],
+      "type": "object"
+    },
+    "ConfigCertsReq": {
+      "properties": {
+        "Export": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Export"
+      ],
+      "type": "object"
+    },
+    "DeleteAccountReq": {
+      "properties": {
+        "Confirm": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Confirm"
+      ],
+      "type": "object"
+    },
+    "DeleteAccountResp": {
+      "properties": {
+        "Deleted": {
+          "$ref": "#/definitions/AccountDeletionDescriptor"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText",
+        "Deleted",
+        "Email"
+      ],
+      "type": "object"
+    },
+    "DeleteKeyReq": {
+      "properties": {
+        "PgpKeyId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "PgpKeyId"
+      ],
+      "type": "object"
+    },
+    "DownloadFileResp": {
+      "properties": {
+        "Content": {
+          "type": "string"
+        },
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText",
+        "Content"
+      ],
+      "type": "object"
+    },
+    "EnrollCertReq": {
+      "properties": {
+        "Code": {
+          "type": "string"
+        },
+        "Company": {
+          "type": "string"
+        },
+        "WsUserId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Code",
+        "Company",
+        "WsUserId"
+      ],
+      "type": "object"
+    },
+    "ErrorResponse": {
+      "properties": {
+        "RequestId": {
+          "type": "string"
+        },
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ExportCertResp": {
+      "properties": {
+        "CertsAndKeys": {
+          "items": {
+            "$ref": "#/definitions/CertsAndKeys"
+          },
+          "type": "array"
+        },
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText",
+        "CertsAndKeys"
+      ],
+      "type": "object"
+    },
+    "FileDescriptor": {
+      "properties": {
+        "FileReference": {
+          "type": "string"
+        },
+        "FileTimestamp": {
+          "type": "string"
+        },
+        "FileType": {
+          "type": "string"
+        },
+        "ServiceId": {
+          "type": "string"
+        },
+        "Status": {
+          "type": "string"
+        },
+        "TargetId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "FileType",
+        "Status",
+        "FileTimestamp",
+        "FileReference"
+      ],
+      "type": "object"
+    },
+    "ImportCertReq": {
+      "properties": {
+        "Certificate": {
+          "type": "string"
+        },
+        "Company": {
+          "type": "string"
+        },
+        "EncCertificate": {
+          "type": "string"
+        },
+        "EncPrivatekey": {
+          "type": "string"
+        },
+        "PrivateKey": {
+          "type": "string"
+        },
+        "WsUserId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Company",
+        "WsUserId",
+        "PrivateKey",
+        "Certificate"
+      ],
+      "type": "object"
+    },
+    "InitLoginResp": {
+      "properties": {
+        "Challenge": {
+          "type": "string"
+        },
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText",
+        "Challenge"
+      ],
+      "type": "object"
+    },
+    "InitRegisterResp": {
+      "properties": {
+        "Challenge": {
+          "type": "string"
+        },
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText",
+        "Challenge"
+      ],
+      "type": "object"
+    },
+    "ListAccountsResp": {
+      "properties": {
+        "Accounts": {
+          "items": {
+            "$ref": "#/definitions/AccountDescriptor"
+          },
+          "type": "array"
+        },
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText",
+        "Accounts"
+      ],
+      "type": "object"
+    },
+    "ListCertsResp": {
+      "properties": {
+        "Certs": {
+          "items": {
+            "$ref": "#/definitions/CertDescriptor"
+          },
+          "type": "array"
+        },
+        "Connections": {
+          "items": {
+            "$ref": "#/definitions/BankConnectionDescriptor"
+          },
+          "type": "array"
+        },
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        },
+        "Retired": {
+          "items": {
+            "$ref": "#/definitions/RetiredCertDescriptor"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText",
+        "Certs"
+      ],
+      "type": "object"
+    },
+    "ListFilesResp": {
+      "properties": {
+        "FileDescriptors": {
+          "items": {
+            "$ref": "#/definitions/FileDescriptor"
+          },
+          "type": "array"
+        },
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText",
+        "FileDescriptors"
+      ],
+      "type": "object"
+    },
+    "ListKeysResp": {
+      "properties": {
+        "PgpKeys": {
+          "items": {
+            "$ref": "#/definitions/PgpKeyDescriptor"
+          },
+          "type": "array"
+        },
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText",
+        "PgpKeys"
+      ],
+      "type": "object"
+    },
+    "LoginMFAReq": {
+      "properties": {
+        "ChallengeName": {
+          "type": "string"
+        },
+        "Code": {
+          "type": "string"
+        },
+        "Session": {
+          "type": "string"
+        },
+        "SetupTOTP": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "Code",
+        "Session"
+      ],
+      "type": "object"
+    },
+    "LoginMFAResp": {
+      "properties": {
+        "AccessToken": {
+          "type": "string"
+        },
+        "Account": {
+          "$ref": "#/definitions/SessionAccountDescriptor"
+        },
+        "ApiKey": {
+          "type": "string"
+        },
+        "ExpiresIn": {
+          "type": "string"
+        },
+        "IdToken": {
+          "type": "string"
+        },
+        "OtpauthUri": {
+          "type": "string"
+        },
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        },
+        "SecretCode": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText"
+      ],
+      "type": "object"
+    },
+    "LoginReq": {
+      "properties": {
+        "ChResp": {
+          "type": "string"
+        },
+        "Encrypted": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ChResp",
+        "Encrypted"
+      ],
+      "type": "object"
+    },
+    "LoginResp": {
+      "properties": {
+        "AccessToken": {
+          "type": "string"
+        },
+        "Account": {
+          "$ref": "#/definitions/SessionAccountDescriptor"
+        },
+        "ApiKey": {
+          "type": "string"
+        },
+        "ChallengeName": {
+          "type": "string"
+        },
+        "ExpiresIn": {
+          "type": "string"
+        },
+        "IdToken": {
+          "type": "string"
+        },
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        },
+        "Session": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText"
+      ],
+      "type": "object"
+    },
+    "PasswordResetReq": {
+      "properties": {
+        "ChResp": {
+          "type": "string"
+        },
+        "Code": {
+          "type": "string"
+        },
+        "Encrypted": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Code",
+        "ChResp",
+        "Encrypted"
+      ],
+      "type": "object"
+    },
+    "PgpKeyDescriptor": {
+      "properties": {
+        "PgpKeyId": {
+          "type": "string"
+        },
+        "PgpKeyPurpose": {
+          "enum": [
+            "export",
+            "authorize"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "PgpKeyId"
+      ],
+      "type": "object"
+    },
+    "RegisterReq": {
+      "properties": {
+        "ApiKey": {
+          "type": "string"
+        },
+        "ChResp": {
+          "type": "string"
+        },
+        "Company": {
+          "type": "string"
+        },
+        "Encrypted": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Name",
+        "Phone",
+        "Company",
+        "ApiKey",
+        "ChResp",
+        "Encrypted"
+      ],
+      "type": "object"
+    },
+    "RegisterResp": {
+      "properties": {
+        "ApiKey": {
+          "type": "string"
+        },
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText",
+        "ApiKey"
+      ],
+      "type": "object"
+    },
+    "Response": {
+      "properties": {
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText"
+      ],
+      "type": "object"
+    },
+    "RetireCertResp": {
+      "properties": {
+        "Bank": {
+          "type": "string"
+        },
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        },
+        "RetiredCertNames": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText",
+        "Bank",
+        "RetiredCertNames"
+      ],
+      "type": "object"
+    },
+    "RetiredCertDescriptor": {
+      "properties": {
+        "Bank": {
+          "type": "string"
+        },
+        "CertName": {
+          "type": "string"
+        },
+        "Expires": {
+          "type": "string"
+        },
+        "Purpose": {
+          "enum": [
+            "signing",
+            "encryption"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "CertName",
+        "Bank",
+        "Purpose",
+        "Expires"
+      ],
+      "type": "object"
+    },
+    "SelectMFAReq": {
+      "properties": {
+        "MfaType": {
+          "type": "string"
+        },
+        "Session": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "MfaType",
+        "Session"
+      ],
+      "type": "object"
+    },
+    "SessionAccountDescriptor": {
+      "properties": {
+        "Entitlements": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "Features": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "Type": {
+          "enum": [
+            "operator",
+            "integrator",
+            "customer"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "Type",
+        "Features"
+      ],
+      "type": "object"
+    },
+    "ShareCertsResp": {
+      "properties": {
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        },
+        "SharedFrom": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "SharedTo": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText",
+        "SharedTo",
+        "SharedFrom"
+      ],
+      "type": "object"
+    },
+    "UnshareCertsResp": {
+      "properties": {
+        "ResponseCode": {
+          "type": "string"
+        },
+        "ResponseText": {
+          "type": "string"
+        },
+        "SharedFrom": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "SharedTo": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "ResponseCode",
+        "ResponseText",
+        "SharedTo",
+        "SharedFrom"
+      ],
+      "type": "object"
+    },
+    "UploadFileReq": {
+      "properties": {
+        "FileContents": {
+          "type": "string"
+        },
+        "FileName": {
+          "type": "string"
+        },
+        "FileType": {
+          "type": "string"
+        },
+        "Signature": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "FileContents",
+        "FileType",
+        "FileName",
+        "Signature"
+      ],
+      "type": "object"
+    },
+    "UploadKeyReq": {
+      "properties": {
+        "PgpKey": {
+          "type": "string"
+        },
+        "PgpKeyPurpose": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "PgpKey",
+        "PgpKeyPurpose"
+      ],
+      "type": "object"
+    },
+    "VerifyEmailReq": {
+      "properties": {
+        "AccessToken": {
+          "type": "string"
+        },
+        "Code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Code",
+        "AccessToken"
+      ],
+      "type": "object"
+    },
+    "VerifyPhoneReq": {
+      "properties": {
+        "Code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Code"
+      ],
+      "type": "object"
+    },
+    "VerifyTOTPReq": {
+      "properties": {
+        "AccessToken": {
+          "type": "string"
+        },
+        "Code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Code",
+        "AccessToken"
+      ],
+      "type": "object"
+    }
+  },
+  "host": "ws-api.isecure.fi",
+  "info": {
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "termsOfService": "https://www.isecure.fi/ws-api-terms",
+    "title": "ISECure WS Channel API",
+    "version": "v2.10.0"
+  },
+  "paths": {
+    "/account/{Email}": {
+      "delete": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "DeleteAccount",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "DeleteAccountReq",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DeleteAccountReq"
+            }
+          },
+          {
+            "in": "path",
+            "name": "Email",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/DeleteAccountResp"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Integrator"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      }
+    },
+    "/account/{Email}/{Mode}": {
+      "get": {
+        "operationId": "InitRegister",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "enum": [
+              "admin",
+              "data"
+            ],
+            "in": "path",
+            "name": "Mode",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/InitRegisterResp"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {}
+        ],
+        "tags": [
+          "Account"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": "curl -H 'Content-Type: application/json' https://ws-api.isecure.fi/v2/account/user%40example.com/admin"
+          },
+          {
+            "lang": "PHP",
+            "source": "$config = new Swagger\\Client\\Configuration();\n$api = new Swagger\\Client\\Api\\AccountApi(new Swagger\\Client\\apiClient($config));\n$api->InitRegister(\"user@example.com\", \"admin\");"
+          },
+          {
+            "lang": "C#",
+            "source": "InitRegisterResp r = account.InitRegister(\"user@example.com\", \"admin\");\nreturn r.Challenge;"
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "VerifyEmail",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "VerifyEmailReq",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VerifyEmailReq"
+            }
+          },
+          {
+            "in": "path",
+            "name": "Email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "enum": [
+              "admin",
+              "data"
+            ],
+            "in": "path",
+            "name": "Mode",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {}
+        ],
+        "tags": [
+          "Account"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "Register",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "RegisterReq",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RegisterReq"
+            }
+          },
+          {
+            "in": "path",
+            "name": "Email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "enum": [
+              "admin",
+              "data"
+            ],
+            "in": "path",
+            "name": "Mode",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/RegisterResp"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {}
+        ],
+        "tags": [
+          "Account"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      }
+    },
+    "/account/{Email}/{Mode}/password": {
+      "get": {
+        "operationId": "InitPasswordReset",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "enum": [
+              "admin",
+              "data"
+            ],
+            "in": "path",
+            "name": "Mode",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {}
+        ],
+        "tags": [
+          "Account"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "PasswordReset",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "PasswordResetReq",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PasswordResetReq"
+            }
+          },
+          {
+            "in": "path",
+            "name": "Email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "enum": [
+              "admin",
+              "data"
+            ],
+            "in": "path",
+            "name": "Mode",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {}
+        ],
+        "tags": [
+          "Account"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      }
+    },
+    "/account/{Email}/{Mode}/{Phone}": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "VerifyPhone",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "VerifyPhoneReq",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VerifyPhoneReq"
+            }
+          },
+          {
+            "in": "path",
+            "name": "Email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "enum": [
+              "admin",
+              "data"
+            ],
+            "in": "path",
+            "name": "Mode",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "Phone",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {}
+        ],
+        "tags": [
+          "Account"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      }
+    },
+    "/certs": {
+      "get": {
+        "operationId": "ListCerts",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ListCertsResp"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Certs"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "ConfigCerts",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "ConfigCertsReq",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ConfigCertsReq"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Certs"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      }
+    },
+    "/certs/shared/{ExtEmail}": {
+      "delete": {
+        "operationId": "UnshareCerts",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "ExtEmail",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/UnshareCertsResp"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Certs"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "ShareCerts",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "ExtEmail",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ShareCertsResp"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Certs"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      }
+    },
+    "/certs/{Bank}": {
+      "delete": {
+        "operationId": "RetireCert",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "Bank",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "Account",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/RetireCertResp"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Certs"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      },
+      "get": {
+        "operationId": "ExportCert",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "Bank",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "PgpKeyId",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ExportCertResp"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Certs"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "EnrollCert",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "EnrollCertReq",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/EnrollCertReq"
+            }
+          },
+          {
+            "in": "path",
+            "name": "Bank",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Certs"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "ImportCert",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "ImportCertReq",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ImportCertReq"
+            }
+          },
+          {
+            "in": "path",
+            "name": "Bank",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Certs"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      }
+    },
+    "/files/{Bank}": {
+      "get": {
+        "operationId": "ListFiles",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "Bank",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "Status",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "FileType",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ListFilesResp"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Files"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "UploadFile",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "UploadFileReq",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UploadFileReq"
+            }
+          },
+          {
+            "in": "path",
+            "name": "Bank",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Files"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      }
+    },
+    "/files/{Bank}/{FileType}/{FileReference}": {
+      "delete": {
+        "operationId": "DeleteFile",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "Bank",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "FileType",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "FileReference",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Files"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      },
+      "get": {
+        "operationId": "DownloadFile",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "Bank",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "FileType",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "FileReference",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/DownloadFileResp"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Files"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      }
+    },
+    "/integrator/accounts": {
+      "get": {
+        "operationId": "ListAccounts",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ListAccountsResp"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Integrator"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      }
+    },
+    "/pgp": {
+      "delete": {
+        "operationId": "DeleteKey",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "DeleteKeyReq",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DeleteKeyReq"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Pgp"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      },
+      "get": {
+        "operationId": "ListKeys",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ListKeysResp"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Pgp"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      },
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "UploadKey",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "UploadKeyReq",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UploadKeyReq"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "201": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Pgp"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      }
+    },
+    "/session/{Email}/{Mode}": {
+      "delete": {
+        "operationId": "Logout",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Authorization",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "header",
+            "name": "x-api-key",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "Email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "enum": [
+              "admin",
+              "data"
+            ],
+            "in": "path",
+            "name": "Mode",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "401": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "403": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "Authorizer": [],
+            "X-Api-Key": []
+          }
+        ],
+        "tags": [
+          "Session"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      },
+      "get": {
+        "operationId": "InitLogin",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "enum": [
+              "admin",
+              "data"
+            ],
+            "in": "path",
+            "name": "Mode",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/InitLoginResp"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {}
+        ],
+        "tags": [
+          "Session"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      },
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "Login",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "LoginReq",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginReq"
+            }
+          },
+          {
+            "in": "path",
+            "name": "Email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "enum": [
+              "admin",
+              "data"
+            ],
+            "in": "path",
+            "name": "Mode",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/LoginResp"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {}
+        ],
+        "tags": [
+          "Session"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      }
+    },
+    "/session/{Email}/{Mode}/mfacode": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "LoginMFA",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "LoginMFAReq",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/LoginMFAReq"
+            }
+          },
+          {
+            "in": "path",
+            "name": "Email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "enum": [
+              "admin",
+              "data"
+            ],
+            "in": "path",
+            "name": "Mode",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/LoginMFAResp"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {}
+        ],
+        "tags": [
+          "Session"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      }
+    },
+    "/session/{Email}/{Mode}/selectmfa": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "SelectMFA",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "SelectMFAReq",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SelectMFAReq"
+            }
+          },
+          {
+            "in": "path",
+            "name": "Email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "enum": [
+              "admin"
+            ],
+            "in": "path",
+            "name": "Mode",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {}
+        ],
+        "tags": [
+          "Session"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      }
+    },
+    "/session/{Email}/{Mode}/verifytotp": {
+      "put": {
+        "consumes": [
+          "application/json"
+        ],
+        "operationId": "VerifyTOTP",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "VerifyTOTPReq",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/VerifyTOTPReq"
+            }
+          },
+          {
+            "in": "path",
+            "name": "Email",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "enum": [
+              "admin"
+            ],
+            "in": "path",
+            "name": "Mode",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/Response"
+            }
+          },
+          "400": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          },
+          "500": {
+            "headers": {
+              "Access-Control-Allow-Origin": {
+                "type": "string"
+              }
+            },
+            "schema": {
+              "$ref": "#/definitions/ErrorResponse"
+            }
+          }
+        },
+        "security": [
+          {}
+        ],
+        "tags": [
+          "Session"
+        ],
+        "x-code-samples": [
+          {
+            "lang": "cURL",
+            "source": ""
+          },
+          {
+            "lang": "PHP",
+            "source": ""
+          },
+          {
+            "lang": "C#",
+            "source": ""
+          },
+          {
+            "lang": "Javascript",
+            "source": ""
+          }
+        ]
+      }
+    }
+  },
+  "schemes": [
+    "https"
+  ],
+  "securityDefinitions": {
+    "Authorizer": {
+      "in": "header",
+      "name": "Authorization",
+      "type": "apiKey"
+    },
+    "X-Api-Key": {
+      "in": "header",
+      "name": "x-api-key",
+      "type": "apiKey"
+    }
+  },
+  "swagger": "2.0",
+  "x-servers": [
+    {
+      "url": "https://ws-api.test.isecure.fi/v2/"
+    },
+    {
+      "url": "https://ws-api.isecure.fi/v2/"
+    }
+  ],
+  "x-tagGroups": [
+    {
+      "name": "Admin account",
+      "tags": [
+        "Account",
+        "Pgp",
+        "Certs"
+      ]
+    },
+    {
+      "name": "Data account",
+      "tags": [
+        "Files"
+      ]
+    },
+    {
+      "name": "Common for both accounts",
+      "tags": [
+        "Session"
+      ]
+    }
+  ]
+}

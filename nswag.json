@@ -1,0 +1,20 @@
+{
+  "runtime": "Net100",
+  "documentGenerator": {
+    "fromDocument": {
+      "url": "contracts/wsapi_v2.json"
+    }
+  },
+  "codeGenerators": {
+    "openApiToCSharpClient": {
+      "generateClientClasses": false,
+      "generateDtoTypes": true,
+      "namespace": "ISECure.Models",
+      "jsonLibrary": "SystemTextJson",
+      "generateNullableReferenceTypes": true,
+      "generateOptionalPropertiesAsNullable": true,
+      "generateDataAnnotations": false,
+      "output": "src/ISECure.Client/Generated/Models.g.cs"
+    }
+  }
+}

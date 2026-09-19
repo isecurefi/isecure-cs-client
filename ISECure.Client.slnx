@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/examples/">
+    <Project Path="examples/FileExchange/FileExchange.csproj" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/ISECure.Client/ISECure.Client.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ISECure.Client.Tests/ISECure.Client.Tests.csproj" />
+  </Folder>
+</Solution>

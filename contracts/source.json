@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/isecurefi/wsapi-v2",
+  "commit": "b3f8ea5a41e8ece23bc82efac22fbc21829a59a3",
+  "path": "wsapi_v2.json",
+  "sourceSha256": "5d5140577b2e45f0b4ff38f1ca2a0d571ac70b03ff4ceddae978175adcb94a77",
+  "sanitizedSha256": "e7be13f1e1e6a70daa8eed29512d221a179da2b558927d83adb5925265fe1972",
+  "sanitization": "Remove examples, descriptions, summaries, contact/logo/externalDocs and infrastructure extensions; preserve wire schemas and operation definitions.",
+  "generator": "NSwag.ConsoleCore 14.7.1"
+}
