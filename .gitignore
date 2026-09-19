@@ -5,3 +5,4 @@ artifacts/
 .env*
 *.user
 TestResults/
+node_modules/

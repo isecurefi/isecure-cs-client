@@ -101,3 +101,29 @@ phone/email re-login, unknown challenges, tenant mismatch, expiry and session li
 Pure challenge encryption and small typed state results keep secrets out of ToString
 and diagnostics. No prompt loop or AWS/simulator policy entered the library.
 Outcome: step 4 complete; live environment qualification follows in step 5.
+
+## Step 5 — file exchange and live qualification
+
+### Pass 1: protocol, interoperability and example correctness
+Compared file/key/certificate paths, verbs and DTO fields with the pinned contract and
+TS SDK. Fixed the qualification-only enrollment verb to POST. Certificate/file-list
+success responses now require their arrays; malformed downloads produce typed protocol
+errors. Upload snapshots the caller's bytes before waiting for another operation.
+The autonomous gpgtest run passed real C# TOTP verification/login, PGP public-key upload,
+signed exact-byte upload, rejection of tampered bytes, independent HTTP/C# download and
+replay digest equality for initial statements and three feedback types. The ordinary
+console example also passed login/list/signed upload/download/logout with a second payment.
+
+### Pass 2: isolation, retained authority and failure recovery
+Reviewed all fixture writes and credential/output paths. AWS account, region and gpgtest
+mapping are pinned; entitlements change only through the guarded operator command.
+Fixed teardown to avoid AWS access when account validation fails, added private checkpoint
+recovery, and gave recovery evidence a separate filename. Upgraded developer-only AWS
+tooling to v3; npm audit reports zero vulnerabilities. Neither library nor console has
+AWS dependencies or simulator behavior. Credentials/private keys are ignored and evidence
+contains only structural checks and digests.
+The live run proved missing/suspended denial for file exchange and renewal, both cache
+transition windows, cross-tenant reference denial, independent access after another
+tenant's suspension, and logout invalidation. Both retained entitlements were confirmed
+suspended at revision 2. Local tests: 64 passed, including malformed responses, 401/403
+invalidation and queued-upload byte immutability.

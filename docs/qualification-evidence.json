@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 1,
+  "runId": "cs-40f9f03771648a5d",
+  "startedAt": "2026-09-19T18:39:58.556Z",
+  "account": "589434896614",
+  "region": "eu-west-1",
+  "stage": "gpgtest",
+  "baseUrl": "https://ws-api.test.isecure.fi/v2",
+  "runtimeSourceSha256": "193ec3c44b2e57915803b412b550f2afce910f4a862bb651567d575365567884",
+  "teardownOnly": false,
+  "sourceRevision": "d6aeaf6aae0f8a19b104f37f3e20ceff78c471dc",
+  "checks": [
+    {
+      "label": "guarded account, region and gpgtest domain mapping",
+      "at": "2026-09-19T18:39:59.526Z"
+    },
+    {
+      "label": "C# autonomous TOTP verification and admin/data authentication for two tenants",
+      "at": "2026-09-19T18:41:02.325Z"
+    },
+    {
+      "label": "missing entitlement denial",
+      "at": "2026-09-19T18:41:03.608Z"
+    },
+    {
+      "label": "independent second tenant missing entitlement denial",
+      "at": "2026-09-19T18:41:03.811Z"
+    },
+    {
+      "label": "missing entitlement denies simulator renewal",
+      "at": "2026-09-19T18:41:04.954Z"
+    },
+    {
+      "label": "enabling primary does not grant second tenant access",
+      "at": "2026-09-19T18:41:06.891Z"
+    },
+    {
+      "label": "enabled entitlement after cache expiry and certificate discovery",
+      "at": "2026-09-19T18:42:19.444Z"
+    },
+    {
+      "label": "exact initial download/replay bytes and cross-tenant reference denial",
+      "at": "2026-09-19T18:42:24.661Z"
+    },
+    {
+      "label": "C# PGP key upload, independently verified signature, signed upload and tampered-byte rejection",
+      "at": "2026-09-19T18:42:28.124Z"
+    },
+    {
+      "label": "C# feedback list/download/replay matches independent HTTP bytes and digests",
+      "at": "2026-09-19T18:42:35.185Z"
+    },
+    {
+      "label": "restored gpgtest renewal artifact renews an entitled synthetic certificate",
+      "at": "2026-09-19T18:42:37.028Z"
+    },
+    {
+      "label": "ordinary C# console login/list/signed upload/download/logout workflow",
+      "at": "2026-09-19T18:42:42.391Z"
+    },
+    {
+      "label": "suspended entitlement denial after cache expiry",
+      "at": "2026-09-19T18:43:45.379Z"
+    },
+    {
+      "label": "suspended entitlement denies simulator renewal",
+      "at": "2026-09-19T18:43:45.533Z"
+    },
+    {
+      "label": "suspending primary leaves second tenant access intact",
+      "at": "2026-09-19T18:43:46.388Z"
+    },
+    {
+      "label": "C# logout clears local authority",
+      "at": "2026-09-19T18:43:48.070Z"
+    }
+  ],
+  "files": [
+    {
+      "label": "primary initial statement",
+      "type": "camt.053.001.02",
+      "bytes": 950,
+      "sha256": "15af23e59f83fc9b516cab600b4227770500773dffc15a31de9d208b6b5612d2"
+    },
+    {
+      "label": "secondary initial statement",
+      "type": "camt.053.001.02",
+      "bytes": 950,
+      "sha256": "b5f3b8743cd167ff12fb7d423351a43ad9337cfa234ed1547da1776d269bc47b"
+    },
+    {
+      "label": "pain.002.001.10 feedback",
+      "type": "pain.002.001.10",
+      "bytes": 1413,
+      "sha256": "524872895fb4a9083392bab1a00f24cbfe7dbdcfe8f44efffd81e61892a28ee8"
+    },
+    {
+      "label": "camt.054.001.02 feedback",
+      "type": "camt.054.001.02",
+      "bytes": 2203,
+      "sha256": "110ba8aa59b8eaad2ccdea0054a7e05dabe6c72ea26f2fad786bf12b0988246a"
+    },
+    {
+      "label": "camt.053.001.02 feedback",
+      "type": "camt.053.001.02",
+      "bytes": 2492,
+      "sha256": "3f92a554f6c56ccd8ff30b240e0aa360c5487934b442467a1c2bb987947e09f3"
+    }
+  ],
+  "teardown": [
+    {
+      "tenant": "primary",
+      "status": "suspended",
+      "revision": 2
+    },
+    {
+      "tenant": "secondary",
+      "status": "suspended",
+      "revision": 2
+    }
+  ],
+  "restRelease": {
+    "version": "628",
+    "codeSha256": "hsmWLsQDebsnrzjnR0bxTy5BC7CD+C2N7lbxWIP4tQo="
+  },
+  "renewalRelease": {
+    "version": "109",
+    "codeSha256": "kOOUanr/nIkOzrM9zkR1MuxBH6juODQfFCsVuX5vPkg="
+  },
+  "upload": {
+    "bytes": 1541,
+    "sha256": "f0b4b36d2499efbebc98330528b4c8fb7e489a5f52893e79a7d5315639c8b7ea",
+    "signatureSha256": "7d73ca42757eafeb5a223ef35f9bd58a114f968620b364eff27572ae1414a552"
+  },
+  "consoleExample": {
+    "uploadBytes": 1553,
+    "uploadSha256": "18ef52855157501a38b3e1951f81906118b51969bf3ad50f6c40e0864aa21410",
+    "downloadedBytes": 1432,
+    "downloadedSha256": "3b25d8d60c8b12822736c7ab7fda78ca41b835b3d47fcd902b7872964845bb9a"
+  },
+  "completedAt": "2026-09-19T18:43:50.451Z",
+  "passed": true
+}
