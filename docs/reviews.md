@@ -127,3 +127,15 @@ transition windows, cross-tenant reference denial, independent access after anot
 tenant's suspension, and logout invalidation. Both retained entitlements were confirmed
 suspended at revision 2. Local tests: 64 passed, including malformed responses, 401/403
 invalidation and queued-upload byte immutability.
+
+### Pass 3: clean-checkout reproduction and evidence audit
+Cloned the candidate with --no-local into an empty temporary directory. Pinned DTO
+generation produced an empty diff; locked restore, Release build (zero warnings/errors),
+all 64 tests, preview package creation, npm ci and runner syntax validation passed.
+Audited the package inventory: only the library, README and package metadata are present.
+The checked-in live evidence identifies run cs-40f9f03771648a5d and its exact runtime
+source digest; independently recomputing that digest matched the final implementation.
+Recovery was rerun against the retained checkpoint: both entitlements remained suspended
+at revision 2 and the original live evidence was preserved. Reviewed supported scope,
+usage/qualification instructions and the private credential exclusions together.
+Outcome: step 5 complete, with all three review passes recorded for every requested step.
