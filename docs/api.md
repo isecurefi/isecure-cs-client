@@ -39,6 +39,7 @@ signing keys serve different purposes and are not interchangeable.
 | `VerifyTotpAsync` | Enrollment access token and code → verification result | Confirms an authenticator; does not create a new login |
 | `LogoutAsync` | API acknowledgement or local success | Always clears local state; no login required |
 | `ListCertificatesAsync` | Certificate/connection metadata | Authenticated account |
+| `EnrollCertificateAsync` | Company, WS user ID and enrollment code → acknowledgement | Authenticated admin; configured bank |
 | `UploadPgpKeyAsync` | Armored public key and `PgpKeyPurpose` → acknowledgement | Authenticated admin |
 | `ListFilesAsync` | Optional file type/status → descriptors | Authenticated account with bank access |
 | `UploadFileAsync` | Exact bytes, name, type, detached signature → acknowledgement | Authenticated data account |

@@ -1,4 +1,4 @@
-# Initial experimental preview: 0.1.0-preview.1
+# Experimental preview: 0.1.0-preview.2
 
 ## Deliverables and public operation coverage
 
@@ -9,13 +9,14 @@
 | Verification and TOTP enrollment | VerifyPhone, VerifyEmail, VerifyTOTP; LoginMFA with SetupTOTP | VerifyPhoneAsync, VerifyEmailAsync, VerifyTotpAsync; enrollment returned in auth result |
 | Logout | Logout | LogoutAsync; local state clears even if request fails |
 | Certificate discovery | ListCerts | ListCertificatesAsync |
+| Certificate enrollment | EnrollCert | EnrollCertificateAsync |
 | PGP authorization key | UploadKey | UploadPgpKeyAsync |
 | Files | ListFiles, UploadFile, DownloadFile | ListFilesAsync, UploadFileAsync, DownloadFileAsync |
 
 The contract's remaining operations are not part of the preview facade. Generated
 models may represent the full schema without promising operation coverage. Certificate
-enrollment needed for synthetic qualification is operator setup, not a simulator-specific
-SDK method. Password reset, certificate administration, key deletion, file deletion,
+enrollment uses the same method for any configured bank; simulator behavior remains
+server-owned. Password reset, other certificate administration, key deletion, file deletion,
 integrator administration and the separate Processing API are later scope.
 
 ## Architecture and invariants

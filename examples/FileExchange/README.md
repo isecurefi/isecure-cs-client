@@ -3,11 +3,72 @@
 First run the [read-only quickstart](../../README.md#tldr-make-your-first-api-call).
 File exchange additionally requires your bank connection/certificates and access,
 an OpenPGP signing key pair, and a file type accepted by that bank. Registration alone
-does not enroll bank certificates. Obtain or enroll the connection through your normal
-ISECure onboarding process; certificate enrollment is outside this SDK preview.
+does not enroll bank certificates. Enroll the connection using the admin workflow below,
+or use an existing connection made available through your normal ISECure onboarding process.
 
 Run commands below from the repository root after `dotnet build -c Release`. Use your
 account settings from `.private/environment.sh`. All steps here use C# and .NET only.
+
+## Enroll the bank certificate
+
+Use an authenticated **admin** account and configure the desired bank. Supply the company's
+bank-agreement name in `ISECURE_COMPANY`, its Web Services user ID in `ISECURE_WS_USER_ID`,
+and the bank-issued enrollment PIN in `ISECURE_ENROLLMENT_CODE`. Provide the admin password
+and requested MFA code as described below; never commit or log enrollment credentials.
+
+```sh
+ISECURE_MODE=admin dotnet run --project examples/FileExchange -c Release --no-build -- \
+  --enroll-certificate
+```
+
+This command logs in, enrolls once, and logs out. It does not upload a payment.
+Check the connection with the quickstart or `ListCertificatesAsync` afterwards.
+If a response is lost or the request times out, check the certificates before retrying;
+the first attempt may have succeeded, and bank PINs may have limited attempts.
+
+In your own application, after completing admin MFA:
+
+<!-- snippet: examples/Recipes/FileExamples.cs#enroll-certificate -->
+```csharp
+public static async Task EnrollBankAsync(
+    ISECureClient authenticatedAdmin, string company, string wsUserId, string code,
+    CancellationToken cancellationToken = default)
+{
+    await authenticatedAdmin.EnrollCertificateAsync(company, wsUserId, code, cancellationToken);
+    // ListCertificatesAsync discovers the connection after successful enrollment.
+    // If the response is lost, check certificates before retrying this write.
+}
+```
+<!-- /snippet -->
+
+### Test simulator enrollment
+
+Bank Simulator is a separately enabled paid test product. Registration alone does not
+grant access. Configure `ISECURE_BASE_URL=https://ws-api.test.isecure.fi/v2` and
+`ISECURE_BANK=simulator`. Use your registered test company's name. Unlike a real bank,
+generate your own `WsUserId` (1–16 printable ASCII bytes) and fresh `Code` (16–32 printable
+ASCII bytes without whitespace); no bank-issued PIN is needed. This compiled C# recipe
+creates suitable values and uses the same enrollment method:
+
+<!-- snippet: examples/Recipes/FileExamples.cs#enroll-simulator -->
+```csharp
+public static Task EnrollSimulatorAsync(
+    ISECureClient authenticatedTestAdmin, string registeredCompany,
+    CancellationToken cancellationToken = default)
+{
+    // The caller configured the test API and bank "simulator" and has enabled access.
+    var suffix = Guid.NewGuid().ToString("N");
+    return authenticatedTestAdmin.EnrollCertificateAsync(
+        registeredCompany, "SIM-" + suffix[..12], "SIM-" + suffix[..24], cancellationToken);
+}
+```
+<!-- /snippet -->
+
+After successful enrollment, use an authenticated data client to list
+`ListFilesAsync("camt.053.001.02", "NEW")`. A fresh enrollment creates one synthetic
+statement; pass its descriptor to the download recipe below. The library contains no
+simulator-specific enrollment or access logic. See the
+[Bank Simulator guide](https://www.isecure.fi/en/bank-simulator/) for access and file formats.
 
 ## Register your PGP public key
 

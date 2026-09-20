@@ -14,7 +14,7 @@
         "type": "Project",
         "dependencies": {
           "BouncyCastle.Cryptography": "[2.7.0, )",
-          "ISECure.Client": "[0.1.0-preview.1, )"
+          "ISECure.Client": "[0.1.0-preview.2, )"
         }
       }
     }

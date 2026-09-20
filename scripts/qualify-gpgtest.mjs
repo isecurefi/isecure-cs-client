@@ -162,6 +162,10 @@ async function independentLogin(t, mode) {
 async function denied(t, label) {
   const response = await driver.call(t.label + '-data', 'list', { fileType: 'camt.053.001.02', status: 'ALL' });
   requireThat(!response.ok && response.error === 'api' && response.code === '01' && response.responseText === 'Bank Simulator access is not enabled for this tenant', label + '_NOT_DENIED');
+  const enrollment = await driver.call(t.label + '-admin', 'enroll', {
+    company: t.company, wsUserId: 'SIM-' + sha(t.email).slice(0, 12), code: 'SIM-' + sha(t.email).slice(0, 24) });
+  requireThat(!enrollment.ok && enrollment.error === 'api' && enrollment.code === '01' &&
+    enrollment.responseText === 'Bank Simulator access is not enabled for this tenant', label + '_ENROLLMENT_NOT_DENIED');
   pass(label);
 }
 async function renewal(t, expectedCode) {
@@ -279,13 +283,23 @@ async function qualify() {
   console.log('WAIT negative entitlement cache expiry (61 seconds)'); await sleep(61000);
   const tokens = {};
   for (const t of fixture.tenants) {
-    const adminToken = await independentLogin(t, 'admin');
-    await http(t, 'POST', '/certs/simulator', { Code: 'SIM-' + sha(t.email).slice(0, 24), Company: t.company, WsUserId: 'SIM-' + sha(t.email).slice(0, 12) }, adminToken);
+    const wsUserId = 'SIM-' + sha(t.email).slice(0, 12);
+    const enrollmentCode = 'SIM-' + sha(t.email).slice(0, 24);
+    if (t === primary) {
+      const output = await example('FileExchange', ['--enroll-certificate'], {
+        ...exampleEnvironment(t, 'admin'), ISECURE_MFA_CODE: await code(t.totpSecret),
+        ISECURE_WS_USER_ID: wsUserId, ISECURE_ENROLLMENT_CODE: enrollmentCode });
+      requireThat(output.includes('Bank certificate enrollment completed.'), 'CS_ENROLLMENT_EXAMPLE_FAILED');
+      await sleep(1100);
+      await login(t, 'admin');
+    } else {
+      await cs(t.label + '-admin', 'enroll', { company: t.company, wsUserId, code: enrollmentCode });
+    }
     const certs = await cs(t.label + '-data', 'certificates');
     requireThat(certs.Connections?.some(x => x.Bank === 'simulator') || certs.Certs?.some(x => (x.CertName || '').includes('simulator')), 'CS_CERTIFICATE_NOT_VISIBLE');
     tokens[t.label] = await independentLogin(t, 'data');
   }
-  pass('enabled entitlement after cache expiry and certificate discovery');
+  pass('enabled entitlement after cache expiry, C# certificate enrollment and discovery');
   const initial = {};
   for (const t of fixture.tenants) {
     const list = await cs(t.label + '-data', 'list', { fileType: 'camt.053.001.02', status: 'NEW' });

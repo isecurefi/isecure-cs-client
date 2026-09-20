@@ -145,3 +145,47 @@ Outcome: step 5 complete, with all three review passes recorded for every reques
 The original records above describe their historical commits. The current evidence
 was refreshed for the follow-up [DX review](dx-review.md), including the public
 quickstart, admin key-registration command and standalone C# signing example.
+
+## Certificate enrollment — 20 September 2026
+
+### Pass 1: public contract and caller workflow
+
+Compared `EnrollCertificateAsync` with the pinned `EnrollCert` operation: POST to the
+configured bank's `/certs/{Bank}`, with exactly Company, WsUserId and Code in the body.
+The method reuses generated DTOs, protected session headers, serialized access and typed
+errors. It returns the API acknowledgement; certificate discovery remains separate.
+Added a runnable admin CLI command, compiled generic/simulator recipes and aligned the
+README, coverage table, API guide and file-exchange walkthrough. The SDK has no
+simulator branch or automatic access grant. The version is `0.1.0-preview.2`.
+
+### Pass 2: isolation, secrets and uncertain writes
+
+Reviewed two tenants sharing one HttpClient, bank-path escaping, exact Unicode/company
+and PIN transmission, unauthenticated calls, cancellation, logical refusal, forbidden
+responses, malformed success and lost network responses. Ten new cases pass. No
+enrollment request is retried automatically, and a forbidden response clears the session.
+Diagnostics and exceptions do not echo the enrollment code. Review caught the CLI's
+upload-only uncertainty warning and corrected it to cover enrollment. The new admin
+example also observes the existing post-logout delay in qualification before re-login.
+Live fixture access uses guarded entitlement commands, and teardown must suspend both
+retained synthetic tenants; customer accounts are never used.
+
+### Pass 3: reproducibility and release evidence
+
+Locked restore, Release build with zero warnings/errors, all 80 tests and preview packing
+passed from a clean source snapshot. Pinned model regeneration has no diff. Eleven
+documentation snippets match compiled sources, and the independent PGP signing check
+passes. Package inspection confirms only library/XML docs, README and NuGet metadata,
+no runtime package dependencies or private fixtures, and the new method in IntelliSense.
+The website's 16 C# operation examples compile against this preview with zero warnings/errors.
+NuGet publication is explicitly deferred by the owner; source/local installation remains
+documented. Browser review confirmed the native EnrollCert sample and updated Finnish,
+English and Swedish simulator guidance, with no claim of NuGet availability.
+
+Live run `cs-e0392f7f086a0e7c` passed. Both the public CLI and direct SDK enrolled the
+simulator certificates; C# listed and downloaded the initial statements, exercised signed
+uploads and feedback, and rejected cross-tenant file references. Missing and suspended
+entitlements denied enrollment and listing; renewal denial/enablement and both cache
+windows passed. Teardown confirmed both retained synthetic tenant entitlements suspended.
+The runtime source digest was independently recomputed and matched the final code.
+See [sanitized evidence](enrollment-qualification-evidence.json).

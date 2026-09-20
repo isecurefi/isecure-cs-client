@@ -37,6 +37,7 @@ if (args.Contains("--driver"))
                         "mfa" => await client.SubmitMfaCodeAsync(Value("code"), x.TryGetProperty("setupTotp", out var setup) && setup.GetBoolean()),
                         "verifyTotp" => await client.VerifyTotpAsync(Value("accessToken"), Value("code")),
                         "certificates" => await client.ListCertificatesAsync(),
+                        "enroll" => await client.EnrollCertificateAsync(Value("company"), Value("wsUserId"), Value("code")),
                         "uploadKey" => await client.UploadPgpKeyAsync(Value("publicKey")),
                         "list" => await client.ListFilesAsync(Value("fileType"), Value("status")),
                         "upload" => await client.UploadFileAsync(Convert.FromBase64String(Value("contents")), Value("fileName"), Value("fileType"), Value("signature")),
@@ -61,6 +62,7 @@ if (args.Contains("--help"))
     Console.WriteLine("ISECure File Exchange — Experimental. See examples/FileExchange/README.md for ISECURE_* configuration.");
     Console.WriteLine("Default: data login, list, signed upload, poll feedback, exact download, logout.");
     Console.WriteLine("--register-key <public-key.asc>: admin login, register a PGP authorization key, logout.");
+    Console.WriteLine("--enroll-certificate: admin login, enroll configured bank with ISECURE_WS_USER_ID and ISECURE_ENROLLMENT_CODE, logout.");
     return;
 }
 try
@@ -68,21 +70,25 @@ try
     string Env(string name) => Environment.GetEnvironmentVariable("ISECURE_" + name) is { Length: > 0 } value
         ? value : throw new InvalidOperationException("Set ISECURE_" + name + "; see examples/FileExchange/README.md.");
     var registeringKey = args.Length == 2 && args[0] == "--register-key";
-    if (args.Length > 0 && !registeringKey) throw new InvalidOperationException("Expected --register-key <public-key.asc>, --help, or no arguments.");
+    var enrolling = args.Length == 1 && args[0] == "--enroll-certificate";
+    var administration = registeringKey || enrolling;
+    if (args.Length > 0 && !administration) throw new InvalidOperationException("Expected --enroll-certificate, --register-key <public-key.asc>, --help, or no arguments.");
+    var wsUserId = enrolling ? Env("WS_USER_ID") : "";
+    var enrollmentCode = enrolling ? Env("ENROLLMENT_CODE") : "";
     var mode = Enum.Parse<AccountMode>(Env("MODE"), true);
-    if (mode != (registeringKey ? AccountMode.Admin : AccountMode.Data))
-        throw new InvalidOperationException(registeringKey ? "Set ISECURE_MODE=admin to register a key." : "Set ISECURE_MODE=data for file exchange.");
+    if (mode != (administration ? AccountMode.Admin : AccountMode.Data))
+        throw new InvalidOperationException(administration ? "Set ISECURE_MODE=admin to enroll certificates or register a key." : "Set ISECURE_MODE=data for file exchange.");
     // Validate local inputs before an authenticated request or payment upload.
-    var uploadFile = registeringKey ? "" : Env("UPLOAD_FILE");
-    var uploadType = registeringKey ? "" : Env("UPLOAD_TYPE");
-    var downloadType = registeringKey ? "" : Env("DOWNLOAD_TYPE");
-    var downloadFile = registeringKey ? "" : Env("DOWNLOAD_FILE");
-    var bytes = registeringKey ? [] : await File.ReadAllBytesAsync(uploadFile);
-    var signature = registeringKey ? "" : await File.ReadAllTextAsync(Env("SIGNATURE_FILE"));
+    var uploadFile = administration ? "" : Env("UPLOAD_FILE");
+    var uploadType = administration ? "" : Env("UPLOAD_TYPE");
+    var downloadType = administration ? "" : Env("DOWNLOAD_TYPE");
+    var downloadFile = administration ? "" : Env("DOWNLOAD_FILE");
+    var bytes = administration ? [] : await File.ReadAllBytesAsync(uploadFile);
+    var signature = administration ? "" : await File.ReadAllTextAsync(Env("SIGNATURE_FILE"));
     var publicKey = registeringKey ? await File.ReadAllTextAsync(args[1]) : "";
-    if (!registeringKey && (bytes.Length == 0 || string.IsNullOrWhiteSpace(signature)))
+    if (!administration && (bytes.Length == 0 || string.IsNullOrWhiteSpace(signature)))
         throw new InvalidOperationException("ISECURE_UPLOAD_FILE and ISECURE_SIGNATURE_FILE must contain data.");
-    if (!registeringKey && (File.Exists(downloadFile) || Directory.Exists(downloadFile) ||
+    if (!administration && (File.Exists(downloadFile) || Directory.Exists(downloadFile) ||
         !Directory.Exists(Path.GetDirectoryName(Path.GetFullPath(downloadFile)))))
         throw new InvalidOperationException("ISECURE_DOWNLOAD_FILE must be a new file in an existing directory.");
     using var client = new ISECureClient(new ClientOptions(new Uri(Env("BASE_URL")), await File.ReadAllTextAsync(Env("PUBLIC_KEY_FILE")),
@@ -94,6 +100,12 @@ try
     if (state.Status != AuthStatus.Authenticated) throw new InvalidOperationException("Authentication did not complete: " + state.Status);
     try
     {
+        if (enrolling)
+        {
+            await client.EnrollCertificateAsync(Env("COMPANY"), wsUserId, enrollmentCode);
+            Console.WriteLine("Bank certificate enrollment completed. Use the quickstart to check visible certificates.");
+            return;
+        }
         if (registeringKey)
         {
             await client.UploadPgpKeyAsync(publicKey, PgpKeyPurpose.Authorize);
@@ -133,7 +145,7 @@ catch (Exception e)
 {
     Console.Error.WriteLine(e is ISecureException or InvalidOperationException ? e.Message : "File exchange example failed: " + e.GetType().Name);
     if (e is OperationCanceledException or ISecureTimeoutException or ISecureNetworkException or ISecureProtocolException)
-        Console.Error.WriteLine("The upload may already have been accepted. Check its status before submitting it again.");
+        Console.Error.WriteLine("The write may already have been accepted. Check certificates for enrollment, or file status for uploads, before submitting it again.");
     Environment.ExitCode = 1;
 }
 

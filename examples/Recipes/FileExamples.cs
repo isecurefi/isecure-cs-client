@@ -5,6 +5,29 @@ namespace ISECure.Examples;
 
 public static class FileExamples
 {
+    #region enroll-certificate
+    public static async Task EnrollBankAsync(
+        ISECureClient authenticatedAdmin, string company, string wsUserId, string code,
+        CancellationToken cancellationToken = default)
+    {
+        await authenticatedAdmin.EnrollCertificateAsync(company, wsUserId, code, cancellationToken);
+        // ListCertificatesAsync discovers the connection after successful enrollment.
+        // If the response is lost, check certificates before retrying this write.
+    }
+    #endregion
+
+    #region enroll-simulator
+    public static Task EnrollSimulatorAsync(
+        ISECureClient authenticatedTestAdmin, string registeredCompany,
+        CancellationToken cancellationToken = default)
+    {
+        // The caller configured the test API and bank "simulator" and has enabled access.
+        var suffix = Guid.NewGuid().ToString("N");
+        return authenticatedTestAdmin.EnrollCertificateAsync(
+            registeredCompany, "SIM-" + suffix[..12], "SIM-" + suffix[..24], cancellationToken);
+    }
+    #endregion
+
     #region upload-key
     public static async Task RegisterSigningKeyAsync(
         ISECureClient authenticatedAdmin, string publicKeyFile,

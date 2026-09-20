@@ -1,6 +1,6 @@
 # ISECure C# Client — Experimental
 
-**.NET 10 · `0.1.0-preview.1` · MIT**
+**.NET 10 · `0.1.0-preview.2` · MIT**
 
 Register an account, log in with SMS/TOTP, discover certificates, register a PGP public
 key, and list, upload or download bank files. Each `ISECureClient` owns one account
@@ -160,7 +160,7 @@ dotnet pack src/ISECure.Client -c Release -o artifacts
 Then from your application directory:
 
 ```sh
-dotnet add package ISECure.Client --version 0.1.0-preview.1 --source /path/to/isecure-cs-client/artifacts
+dotnet add package ISECure.Client --version 0.1.0-preview.2 --source /path/to/isecure-cs-client/artifacts
 ```
 
 The package includes XML documentation for IntelliSense.
@@ -171,12 +171,13 @@ The package includes XML documentation for IntelliSense.
 | --- | --- |
 | First login and certificate discovery | [Quickstart source](examples/Quickstart/Program.cs) |
 | Registration, SMS/TOTP, factor selection, email/phone verification | [Authentication guide and compiled recipes](docs/authentication.md) |
+| Enroll a bank certificate, including the test simulator | [Certificate enrollment](examples/FileExchange/README.md#enroll-the-bank-certificate) |
 | Sign a file entirely in C# | [Standalone signing example](examples/SignFile/README.md) |
 | Register a signing key, upload and download feedback | [File exchange walkthrough](examples/FileExchange/README.md) |
 | Handle refusals, expired sessions, cancellation and uncertain uploads | [Error handling](docs/errors.md) |
 | Check available methods and configuration | [API guide](docs/api.md) |
 
-`Admin` accounts register PGP keys; `Data` accounts upload/download files. Use separate
+`Admin` accounts enroll certificates and register PGP keys; `Data` accounts upload/download files. Use separate
 client instances for these roles. File exchange requires the appropriate bank
 certificates and service access. The API's RSA **public** key encrypts login challenges;
 your own OpenPGP key pair signs files. These are different keys.
@@ -184,8 +185,8 @@ your own OpenPGP key pair signs files. These are different keys.
 ## Preview scope
 
 The supported surface is registration, authentication/verification, logout, certificate
-listing, PGP public-key upload, and file list/upload/download. Certificate enrollment
-and administration, password reset, file deletion, integrator administration, and the
+enrollment and listing, PGP public-key upload, and file list/upload/download. Other certificate
+administration, password reset, file deletion, integrator administration, and the
 separate Processing API are outside this preview. Generated models for other operations
 do not imply a supported method. See the [coverage table](docs/preview-scope.md).
 

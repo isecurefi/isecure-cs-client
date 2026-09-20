@@ -23,7 +23,8 @@ The runner performs these checks:
 - The README quickstart logs into a fresh account and succeeds with zero bank certificates.
 - Missing entitlement denial; enabling one tenant does not authorize the other.
 - Guarded enable with read-back, followed by expiry of the 60-second denial cache.
-- Operator certificate setup, then C# certificate discovery and initial statement downloads.
+- C# certificate enrollment through the public admin command and SDK method, then certificate
+  discovery and initial statement downloads.
 - Independent HTTP versus C# download/replay byte equality and SHA-256 digests.
 - Cross-tenant file-reference denial.
 - Public admin key-registration command with autonomous MFA.
@@ -38,7 +39,7 @@ The runner performs these checks:
 
 It uses only synthetic `.invalid` users and creates gpgtest-only API Gateway usage plans.
 Entitlements use only the existing guarded operator command. Enrollment uses the normal
-API as fixture setup; the C# library contains no simulator-specific logic.
+C# SDK method; the C# library contains no simulator-specific logic.
 
 Checkpoint credentials and generated PGP private keys are stored under ignored
 `.private/<run-id>/` with restricted permissions. Sanitized evidence (checks, artifact
@@ -68,7 +69,17 @@ CI runs offline contract/build/unit, documentation and independent signing check
 creates a local preview package. It has
 no AWS credentials and never provisions tenants or runs live qualification.
 
-## Recorded result
+## Enrollment qualification — 20 September 2026
+
+[`enrollment-qualification-evidence.json`](enrollment-qualification-evidence.json) records
+successful run `cs-e0392f7f086a0e7c` for preview 2. It exercises the public enrollment
+command and the SDK method, initial statement listing/download, exact signed-file exchange,
+missing/suspended enrollment denial, tenant isolation and renewal. Both retained synthetic
+tenant entitlements were confirmed suspended. The final source digest was independently
+recomputed and matched. The sourceRevision identifies the pre-change HEAD; the runtime
+digest includes the enrollment implementation and runner changes then in the working tree.
+
+## Earlier developer-experience qualification
 
 [`qualification-evidence.json`](qualification-evidence.json) records the successful
 2026-09-19 DX qualification run `cs-231cedc0553ca2c9` and confirmed suspension of both
