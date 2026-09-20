@@ -68,5 +68,11 @@ suppress messages during fixture bootstrap, and record evidence without secrets.
 Three inline review passes follow EACH step before the next begins:
 (1) scope and API correctness, (2) security/isolation/failure behavior, (3) verification
 and maintainability. Record concrete findings, fixes and commands in reviews.md.
-Step 5 receives the same three passes. No sub-agents. Public GitHub/NuGet publication
-and website promotion are outside this implementation task; the repository stays private.
+Step 5 receives the same three passes. No sub-agents.
+
+## Distribution
+
+The [GitHub repository](https://github.com/isecurefi/isecure-cs-client) is public as an
+Experimental .NET 10 preview. Follow the [README](../README.md) to install from source
+or build a local package; no NuGet release is published. Website links and examples
+describe only the preview operations listed above and do not imply full API coverage.
