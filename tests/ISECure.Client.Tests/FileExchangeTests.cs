@@ -111,6 +111,49 @@ public class FileExchangeTests
         await Task.WhenAll(list, upload);
     }
 
+    [Theory]
+    [InlineData("AAEC//6A")]
+    [InlineData("")]
+    [InlineData(null)]
+    public async Task UploadPreservesOptionalInlineContentWithoutDownloading(string? content)
+    {
+        using var rsa = RSA.Create(2048);
+        var uploads = 0;
+        using var http = new HttpClient(new FakeHandler((r, _) => {
+            if (AuthResponse(r) is { } auth) return Task.FromResult(auth);
+            Assert.Equal(HttpMethod.Put, r.Method);
+            Assert.EndsWith("/files/bank", r.RequestUri!.AbsolutePath);
+            uploads++;
+            var payload = new Dictionary<string, object> { ["ResponseCode"] = "00", ["ResponseText"] = "OK" };
+            if (content is not null) payload["Content"] = content;
+            return Task.FromResult(FakeHandler.Json(JsonSerializer.Serialize(payload), HttpStatusCode.Created));
+        }));
+        var diagnostics = new List<SdkDiagnostic>();
+        using var client = new ISECureClient(Options(rsa), http, diagnostic: diagnostics.Add);
+        await client.LoginAsync("password");
+        var result = await client.UploadFileAsync(new byte[] { 1, 2, 3 }, "query.xml", "camt.060.001.02", "signature");
+        ISECure.Models.Response acknowledgement = result;
+        Assert.Equal("00", acknowledgement.ResponseCode);
+        Assert.Equal(content, result.Content);
+        using var json = JsonDocument.Parse(JsonSerializer.Serialize(result));
+        Assert.Equal(content is not null, json.RootElement.TryGetProperty("Content", out var serialized));
+        if (content is not null) Assert.Equal(content, serialized.GetString());
+        Assert.Equal(1, uploads);
+        Assert.Single(diagnostics, d => d.Operation == "UploadFile");
+        Assert.DoesNotContain("AAEC//6A", JsonSerializer.Serialize(diagnostics));
+    }
+
+    [Fact]
+    public async Task UploadRejectsNonStringInlineContentAsProtocolError()
+    {
+        using var rsa = RSA.Create(2048);
+        using var http = new HttpClient(new FakeHandler((r, _) => Task.FromResult(AuthResponse(r) ??
+            FakeHandler.Json("""{"ResponseCode":"00","ResponseText":"OK","Content":{"unexpected":true}}""", HttpStatusCode.Created))));
+        using var client = new ISECureClient(Options(rsa), http);
+        await client.LoginAsync("password");
+        await Assert.ThrowsAsync<ISecureProtocolException>(() => client.UploadFileAsync(new byte[] { 1 }, "query.xml", "type", "signature"));
+    }
+
     private static ClientOptions Options(RSA rsa) => new(new Uri("https://example.invalid/v2"),
         rsa.ExportSubjectPublicKeyInfoPem(), "synthetic@example.invalid", AccountMode.Data, "tenant-A", "bank", "company", "name", "phone");
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Return optional inline Base64 bank reports from `UploadFileAsync` as `UploadFileResponse`.
+- The result extends `Response`; explicitly typed `Task<Response>` callers must update their task type.
+
 ## 0.1.0-preview.2 — 2026-09-20
 
 - Add `EnrollCertificateAsync(company, wsUserId, code, cancellationToken)` for the
