@@ -1,4 +1,4 @@
-# Experimental preview: 0.1.0-preview.2
+# Experimental preview: 0.1.1-preview.1
 
 ## Deliverables and public operation coverage
 
@@ -75,5 +75,5 @@ Step 5 receives the same three passes. No sub-agents.
 
 The [GitHub repository](https://github.com/isecurefi/isecure-cs-client) is public as an
 Experimental .NET 10 preview. Follow the [README](../README.md) to install from source
-or build a local package; no NuGet release is published. Website links and examples
+or use the NuGet package attached to the GitHub release; it is not on NuGet.org. Website links and examples
 describe only the preview operations listed above and do not imply full API coverage.

@@ -151,7 +151,9 @@ Replace `/path/to/isecure-cs-client` with your clone location. Import `ISECure` 
 `ISECure.Authentication`; response models are in `ISECure.Models`. The complete
 quickstart above can replace a console application's `Program.cs`.
 
-There is no published NuGet release yet. To try a local package, from the SDK root:
+Download the `.nupkg` asset from the [0.1.1-preview.1 GitHub release](https://github.com/isecurefi/isecure-cs-client/releases/tag/v0.1.1-preview.1)
+into a local package directory. NuGet.org publication remains deferred. You can also
+build the package from the SDK root:
 
 ```sh
 dotnet pack src/ISECure.Client -c Release -o artifacts
@@ -160,7 +162,7 @@ dotnet pack src/ISECure.Client -c Release -o artifacts
 Then from your application directory:
 
 ```sh
-dotnet add package ISECure.Client --version 0.1.0-preview.2 --source /path/to/isecure-cs-client/artifacts
+dotnet add package ISECure.Client --version 0.1.1-preview.1 --source /path/to/isecure-cs-client/artifacts
 ```
 
 The package includes XML documentation for IntelliSense.
