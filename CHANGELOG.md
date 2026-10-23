@@ -1,9 +1,13 @@
 # Changelog
 
-## Unreleased
+## 0.1.1-preview.1 — 2026-10-23
 
-- Return optional inline Base64 bank reports from `UploadFileAsync` as `UploadFileResponse`.
-- The result extends `Response`; explicitly typed `Task<Response>` callers must update their task type.
+- Preserve optional inline Base64 `Content` from UploadFile responses.
+- Keep the existing `Task<Response>` signature; `Response.Content` is additive.
+- Verify inline balance reports through a separately installed NuGet package in gpgtest.
+
+This experimental patch is distributed as a GitHub release with a NuGet package asset.
+NuGet.org publication remains deferred.
 
 ## 0.1.0-preview.2 — 2026-09-20
 

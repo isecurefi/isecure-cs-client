@@ -1,6 +1,6 @@
 # ISECure C# Client — Experimental
 
-**.NET 10 · `0.1.0-preview.2` · MIT**
+**.NET 10 · `0.1.1-preview.1` · MIT**
 
 Register an account, log in with SMS/TOTP, discover certificates, register a PGP public
 key, and list, upload or download bank files. Each `ISECureClient` owns one account

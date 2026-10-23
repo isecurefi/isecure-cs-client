@@ -42,7 +42,7 @@ signing keys serve different purposes and are not interchangeable.
 | `EnrollCertificateAsync` | Company, WS user ID and enrollment code → acknowledgement | Authenticated admin; configured bank |
 | `UploadPgpKeyAsync` | Armored public key and `PgpKeyPurpose` → acknowledgement | Authenticated admin |
 | `ListFilesAsync` | Optional file type/status → descriptors | Authenticated account with bank access |
-| `UploadFileAsync` | Exact bytes, name, type, detached signature → `UploadFileResponse` with optional Base64 `Content` | Authenticated data account |
+| `UploadFileAsync` | Exact bytes, name, type, detached signature → `Response` with optional Base64 `Content` | Authenticated data account |
 | `DownloadFileAsync` | Descriptor's type/reference → `DownloadedFile.Bytes` | Authenticated data account |
 
 Response DTOs are in `ISECure.Models`. File/status values follow the bank's API contract;
@@ -68,11 +68,10 @@ See [authentication](authentication.md), [error handling](errors.md) and
 ## Inline upload reports
 
 Some banks return a report directly from UploadFile. `UploadFileAsync` now returns
-`Task<UploadFileResponse>`; read its nullable `Content` property for the raw Base64
+`Task<Response>`; read its nullable `Content` property for the raw Base64
 report. It is null for ordinary acknowledgements. The SDK performs no extra GET
 or automatic decoding. Existing API refusals still throw the same exceptions.
 
-`UploadFileResponse` extends `Response`, so existing code consuming an awaited
-acknowledgement remains compatible. Code explicitly storing `Task<Response>` must
-use `Task<UploadFileResponse>` (or await it first); generic tasks are not covariant.
-This is a prepared change to the experimental SDK, not a published package.
+The existing `Task<Response>` signature is preserved. `Response.Content` is an
+additive nullable property, so existing task declarations and acknowledgement
+consumers continue to compile unchanged.

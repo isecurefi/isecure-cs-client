@@ -21,6 +21,6 @@ Build: `dotnet restore --locked-mode`, `dotnet build --no-restore -c Release`,
 `dotnet test --no-build -c Release`. Network access is required only for pinned
 NuGet tool/package restore; no credentials or AWS account are needed for unit CI.
 
-`UploadFileResponse` is a handwritten additive response model for the pending
-UploadFile Content contract. It extends generated `Response`; the pinned upstream
-snapshot and generated DTOs remain unchanged until the new contract is published.
+`Response.Content.cs` adds an optional Content property to the generated partial
+`Response` model for inline UploadFile reports. The pinned upstream snapshot and
+generated files remain unchanged until the new contract is published.

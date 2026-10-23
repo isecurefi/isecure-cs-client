@@ -131,7 +131,8 @@ public class FileExchangeTests
         var diagnostics = new List<SdkDiagnostic>();
         using var client = new ISECureClient(Options(rsa), http, diagnostic: diagnostics.Add);
         await client.LoginAsync("password");
-        var result = await client.UploadFileAsync(new byte[] { 1, 2, 3 }, "query.xml", "camt.060.001.02", "signature");
+        Task<ISECure.Models.Response> upload = client.UploadFileAsync(new byte[] { 1, 2, 3 }, "query.xml", "camt.060.001.02", "signature");
+        var result = await upload;
         ISECure.Models.Response acknowledgement = result;
         Assert.Equal("00", acknowledgement.ResponseCode);
         Assert.Equal(content, result.Content);

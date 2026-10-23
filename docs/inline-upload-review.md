@@ -4,10 +4,11 @@
 
 The old facade deserialized UploadFile as the generated `Response`, which contains
 only ResponseCode/ResponseText, so System.Text.Json discarded inline Content.
-The new `UploadFileResponse : Response` preserves an optional string Content.
-The result remains assignable to Response after awaiting. Explicit
-`Task<Response>` declarations must change to `Task<UploadFileResponse>`; that
-experimental SDK signature change is documented in the API guide and changelog.
+A handwritten partial `Response` extension now preserves an optional string Content.
+The patch release retains `Task<Response>` exactly; the regression test explicitly
+assigns the upload task to that type before awaiting it. The earlier prepared
+specialized return type was replaced before release to preserve source and binary
+compatibility with existing consumers.
 
 Tests cover opaque Base64 bytes, an empty string, an acknowledgement with the
 field absent, non-string field rejection, unchanged acknowledgement properties,
@@ -40,4 +41,5 @@ No production bank operation or deployment was performed.
 
 Evidence is in the main repository's `.private/inline-upload-evidence-20261023/`
 directory; it contains credentials and must not be published. The package and
-documentation remain unpublished; the package version is unchanged for preparation.
+documentation were unpublished during qualification. The final patch version is
+0.1.1-preview.1; its release assets are published on GitHub.

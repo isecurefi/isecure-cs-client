@@ -96,7 +96,7 @@ public sealed partial class ISECureClient
     /// <exception cref="ISecureAuthException">The client has no valid authenticated session.</exception>
     /// <exception cref="ISecureException">An HTTP, protocol, network or timeout failure occurred.</exception>
     /// <exception cref="OperationCanceledException">The caller cancelled the operation.</exception>
-    public Task<UploadFileResponse> UploadFileAsync(ReadOnlyMemory<byte> bytes, string fileName, string fileType, string detachedSignature, CancellationToken cancellationToken = default)
+    public Task<Response> UploadFileAsync(ReadOnlyMemory<byte> bytes, string fileName, string fileType, string detachedSignature, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(fileName); ArgumentException.ThrowIfNullOrWhiteSpace(fileType);
         ArgumentException.ThrowIfNullOrWhiteSpace(detachedSignature);
@@ -104,7 +104,7 @@ public sealed partial class ISECureClient
         // Snapshot bytes before any await; caller mutations cannot change the signed request payload.
         var request = new UploadFileReq { FileContents = Convert.ToBase64String(bytes.Span), FileName = fileName, FileType = fileType, Signature = detachedSignature };
         return ProtectedAsync("UploadFile", HttpMethod.Put, "files/" + Segment(_options.Bank), request,
-            data => ApiTransport.Deserialize<UploadFileResponse>(data, "UploadFile"), cancellationToken);
+            data => ApiTransport.Deserialize<Response>(data, "UploadFile"), cancellationToken);
     }
 
     /// <summary>Downloads and base64-decodes a file without changing its bytes.</summary>
