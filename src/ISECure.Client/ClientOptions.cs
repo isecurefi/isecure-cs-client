@@ -16,6 +16,8 @@ public sealed class ClientOptions
     public Uri BaseUri { get; }
     /// <summary>Environment RSA public PEM key for password challenge encryption; separate from your PGP key.</summary>
     public string PublicKeyPem { get; }
+    /// <summary>Opt-in password envelope; null preserves the legacy profile.</summary>
+    public string? EncryptionProfile { get; }
     /// <summary>Registered account email.</summary>
     public string Email { get; }
     /// <summary>Role used to authenticate.</summary>
@@ -47,12 +49,16 @@ public sealed class ClientOptions
     /// <param name="phone">Account phone number, including country code.</param>
     /// <param name="requestTimeout">Optional timeout greater than zero and no longer than five minutes.</param>
     /// <param name="maximumResponseBytes">Maximum JSON response size, from 1 KiB through 64 MiB.</param>
+    /// <param name="encryptionProfile">Null for legacy or password-rsa-oaep-sha256-v1 for explicit adoption.</param>
     /// <exception cref="ArgumentException">A required value is blank, the API key contains invalid characters, or the URI is not a suitable HTTPS base URL.</exception>
     /// <exception cref="ArgumentOutOfRangeException">Role, timeout or response limit is invalid.</exception>
     public ClientOptions(Uri baseUri, string publicKeyPem, string email, AccountMode mode,
         string apiKey, string bank, string company, string name, string phone,
-        TimeSpan? requestTimeout = null, int maximumResponseBytes = 8 * 1024 * 1024)
+        TimeSpan? requestTimeout = null, int maximumResponseBytes = 8 * 1024 * 1024, string? encryptionProfile = null)
     {
+        if (encryptionProfile is not null && encryptionProfile != PasswordProfiles.RsaOaepSha256V1)
+            throw new ArgumentException("Unsupported password profile.", nameof(encryptionProfile));
+        EncryptionProfile = encryptionProfile;
         ArgumentNullException.ThrowIfNull(baseUri);
         if (!baseUri.IsAbsoluteUri || baseUri.Scheme != Uri.UriSchemeHttps ||
             !string.IsNullOrEmpty(baseUri.UserInfo) || !string.IsNullOrEmpty(baseUri.Query) ||

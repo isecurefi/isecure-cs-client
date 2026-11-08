@@ -26,8 +26,8 @@ public sealed partial class ISECureClient
         ResetAuthentication();
         var challenge = await ChallengeAsync("InitRegister", AccountPath, cancellationToken).ConfigureAwait(false);
         var response = await _transport.SendAsync("Register", HttpMethod.Put, AccountPath,
-            new RegisterReq { ApiKey = _apiKey, ChResp = challenge, Company = _options.Company, Name = _options.Name,
-                Phone = _options.Phone, Encrypted = ChallengeEncryption.Encrypt(_options.PublicKeyPem, challenge, password) },
+            new RegisterReq { ApiKey = _apiKey, ChResp = challenge.Challenge, EncryptionProfile = challenge.EncryptionProfile, KeyId = challenge.KeyId, Company = _options.Company, Name = _options.Name,
+                Phone = _options.Phone, Encrypted = challenge.Encrypt(_options.PublicKeyPem, password) },
             _apiKey, null, cancellationToken).ConfigureAwait(false);
         var registered = ApiTransport.Deserialize<RegisterResp>(response, "Register");
         ValidateTenant(registered.ApiKey, "Register");
@@ -50,7 +50,7 @@ public sealed partial class ISECureClient
         {
             var challenge = await ChallengeAsync("InitLogin", SessionPath, cancellationToken).ConfigureAwait(false);
             return await _transport.SendAsync("Login", HttpMethod.Post, SessionPath,
-                new LoginReq { ChResp = challenge, Encrypted = ChallengeEncryption.Encrypt(_options.PublicKeyPem, challenge, password) },
+                new LoginReq { ChResp = challenge.Challenge, EncryptionProfile = challenge.EncryptionProfile, KeyId = challenge.KeyId, Encrypted = challenge.Encrypt(_options.PublicKeyPem, password) },
                 _apiKey, null, cancellationToken).ConfigureAwait(false);
         }).ConfigureAwait(false);
     }, cancellationToken);
@@ -148,10 +148,15 @@ public sealed partial class ISECureClient
         return ApiTransport.Deserialize<Response>(data, "Logout");
     }, CancellationToken.None);
 
-    private async Task<string> ChallengeAsync(string operation, string path, CancellationToken cancellationToken)
+    private async Task<PasswordDiscovery> ChallengeAsync(string operation, string path, CancellationToken cancellationToken)
     {
+        if (_options.EncryptionProfile is not null)
+        {
+            path += "?EncryptionProfile=" + Uri.EscapeDataString(_options.EncryptionProfile);
+            if (operation == "InitRegister") path += "&ApiKey=" + Uri.EscapeDataString(_apiKey);
+        }
         var data = await _transport.SendAsync(operation, HttpMethod.Get, path, null, _apiKey, null, cancellationToken).ConfigureAwait(false);
-        return ApiTransport.String(data, "Challenge") ?? throw new ISecureProtocolException(operation);
+        return PasswordDiscovery.Parse(data, _options.EncryptionProfile);
     }
 
     private async Task<AuthResult> AuthenticationAttemptAsync(Func<Task<JsonElement>> action)
