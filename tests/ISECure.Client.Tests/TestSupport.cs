@@ -14,6 +14,6 @@ internal static class Fixture
 {
     internal static ClientOptions Options(string tenant = "tenant-A", TimeSpan? timeout = null, int max = 8388608) =>
         new(new Uri("https://example.invalid/v2"), "public-key", "synthetic@example.invalid", AccountMode.Data,
-            tenant, "generic-bank", "Synthetic Company", "Synthetic User", "+358400100001", timeout, max);
+            tenant, "generic-bank", "Synthetic Company", "Synthetic User", "+358400100001", timeout, max, encryptionProfile: PasswordProfiles.Legacy);
     internal const string Ok = """{"ResponseCode":"00","ResponseText":"OK"}""";
 }

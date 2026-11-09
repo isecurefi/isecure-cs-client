@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0 — 2026-11-09
+
+- Make the stronger password profile the default for password operations; preserve explicit legacy selection for grandfathered tenants and refuse automatic fallback.
+- Update production V2 availability and migration guidance.
+- Keep password-reset discovery bound to its operation and identity.
+
 ## 0.2.0-preview.1 — 2026-11-09
 
 - Add explicit opt-in v2 password-profile registration, login and reset helpers.

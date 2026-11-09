@@ -64,5 +64,5 @@ public class ExampleTests
     private const string Challenge = """{"ResponseCode":"00","ResponseText":"OK","Challenge":"nonce|1789841000000|id"}""";
     private const string Authenticated = """{"ResponseCode":"00","ResponseText":"OK","ApiKey":"tenant-A","IdToken":"token","ExpiresIn":3600}""";
     private static ClientOptions Options(RSA rsa) => new(new Uri("https://example.invalid/v2"), rsa.ExportSubjectPublicKeyInfoPem(),
-        "synthetic@example.invalid", AccountMode.Data, "tenant-A", "bank", "company", "name", "phone");
+        "synthetic@example.invalid", AccountMode.Data, "tenant-A", "bank", "company", "name", "phone", encryptionProfile: PasswordProfiles.Legacy);
 }
