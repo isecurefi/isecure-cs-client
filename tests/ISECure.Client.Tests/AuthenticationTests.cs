@@ -13,7 +13,7 @@ public class AuthenticationTests : IDisposable
     private const string Success = """{"ResponseCode":"00","ResponseText":"Login OK","ApiKey":"tenant-A","IdToken":"private-token","ExpiresIn":"3600","Account":{"Type":"integrator","Features":["module.preview"],"Entitlements":[]}}""";
     private const string Init = """{"ResponseCode":"00","ResponseText":"OK","Challenge":"nonce|1789841000000|request-id"}""";
     private ClientOptions Options(string tenant = "tenant-A", AccountMode mode = AccountMode.Admin) => new(new Uri("https://example.invalid/v2"),
-        _rsa.ExportSubjectPublicKeyInfoPem(), "synthetic+cs@example.invalid", mode, tenant, "generic-bank", "Synthetic", "User", "+358400100001");
+        _rsa.ExportSubjectPublicKeyInfoPem(), "synthetic+cs@example.invalid", mode, tenant, "generic-bank", "Synthetic", "User", "+358400100001", encryptionProfile: PasswordProfiles.Legacy);
     public void Dispose() => _rsa.Dispose();
 
     [Theory]

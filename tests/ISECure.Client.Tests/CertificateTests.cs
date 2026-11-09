@@ -8,7 +8,7 @@ public class CertificateTests
 {
     private static ClientOptions Options(RSA rsa, string tenant = "tenant-A") =>
         new(new Uri("https://example.invalid/v2"), rsa.ExportSubjectPublicKeyInfoPem(), "user@example.invalid",
-            AccountMode.Admin, tenant, "bank/name", "Profile Company", "Synthetic User", "+358400100001");
+            AccountMode.Admin, tenant, "bank/name", "Profile Company", "Synthetic User", "+358400100001", encryptionProfile: PasswordProfiles.Legacy);
 
     private static HttpResponseMessage? AuthResponse(HttpRequestMessage request)
     {

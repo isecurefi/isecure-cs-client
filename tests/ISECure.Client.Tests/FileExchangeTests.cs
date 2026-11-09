@@ -28,7 +28,7 @@ public class FileExchangeTests
             if (r.RequestUri.Query.Length > 0) return FakeHandler.Json("""{"ResponseCode":"00","ResponseText":"OK","FileDescriptors":[{"FileReference":"ref/with?chars","FileType":"type/a"}]}""");
             return FakeHandler.Json(JsonSerializer.Serialize(new { ResponseCode = "00", ResponseText = "OK", Content = Convert.ToBase64String(exact) }));
         }));
-        var options = new ClientOptions(new Uri("https://example.invalid/v2"), rsa.ExportSubjectPublicKeyInfoPem(), "user+tag@example.invalid", AccountMode.Data, "tenant-A", "bank/name", "company", "name", "phone");
+        var options = new ClientOptions(new Uri("https://example.invalid/v2"), rsa.ExportSubjectPublicKeyInfoPem(), "user+tag@example.invalid", AccountMode.Data, "tenant-A", "bank/name", "company", "name", "phone", encryptionProfile: PasswordProfiles.Legacy);
         using var client = new ISECureClient(options, http);
         Assert.Equal(AuthStatus.Authenticated, (await client.LoginAsync("password")).Status);
         await client.UploadFileAsync(exact, "file.xml", "type/a", "detached-exact-signature");
@@ -156,7 +156,7 @@ public class FileExchangeTests
     }
 
     private static ClientOptions Options(RSA rsa) => new(new Uri("https://example.invalid/v2"),
-        rsa.ExportSubjectPublicKeyInfoPem(), "synthetic@example.invalid", AccountMode.Data, "tenant-A", "bank", "company", "name", "phone");
+        rsa.ExportSubjectPublicKeyInfoPem(), "synthetic@example.invalid", AccountMode.Data, "tenant-A", "bank", "company", "name", "phone", encryptionProfile: PasswordProfiles.Legacy);
 
     private static HttpResponseMessage? AuthResponse(HttpRequestMessage request) =>
         !request.RequestUri!.AbsolutePath.Contains("/session/") ? null : FakeHandler.Json(request.Method == HttpMethod.Get ?
