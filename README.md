@@ -1,6 +1,6 @@
 # ISECure C# Client — Experimental
 
-**.NET 10 · `0.1.1-preview.1` · MIT**
+**.NET 10 · `0.2.0-preview.1` · MIT**
 
 Register an account, log in with SMS/TOTP, discover certificates, register a PGP public
 key, and list, upload or download bank files. Each `ISECureClient` owns one account
@@ -151,7 +151,7 @@ Replace `/path/to/isecure-cs-client` with your clone location. Import `ISECure` 
 `ISECure.Authentication`; response models are in `ISECure.Models`. The complete
 quickstart above can replace a console application's `Program.cs`.
 
-Download the `.nupkg` asset from the [0.1.1-preview.1 GitHub release](https://github.com/isecurefi/isecure-cs-client/releases/tag/v0.1.1-preview.1)
+Download the `.nupkg` asset from the [0.2.0-preview.1 GitHub release](https://github.com/isecurefi/isecure-cs-client/releases/tag/v0.2.0-preview.1)
 into a local package directory. NuGet.org publication remains deferred. You can also
 build the package from the SDK root:
 
@@ -162,7 +162,7 @@ dotnet pack src/ISECure.Client -c Release -o artifacts
 Then from your application directory:
 
 ```sh
-dotnet add package ISECure.Client --version 0.1.1-preview.1 --source /path/to/isecure-cs-client/artifacts
+dotnet add package ISECure.Client --version 0.2.0-preview.1 --source /path/to/isecure-cs-client/artifacts
 ```
 
 The package includes XML documentation for IntelliSense.
@@ -212,12 +212,14 @@ SDK use and requires AWS access. CI runs the unit tests and offline signing chec
 it never provisions accounts or sends payments.
 
 
-## Opt-in password profile (unpublished preview)
+## Opt-in password profile (gpgtest)
 
-Qualification (2026-11-08): this unpublished source passed local checks and
+Qualification (2026-11-08): this implementation passed local checks and
 bounded hosted registration/login tests on ordinary gpgtest, including Admin MFA
 and 283-byte UTF-8 passwords. RSA-3072 and RSA-4096 login were exercised.
-Production authentication deployment and SDK publication remain excluded.
+The stronger profile is currently available on gpgtest only. Existing configuration
+keeps legacy authentication for production; SDK installation does not activate
+the new profile.
 
 Additional qualification (2026-11-09): this SDK passed Data/Admin TOTP login,
 reset initialization and invalid reset-code rejection against gpgtest Login 28.
@@ -243,5 +245,5 @@ label. The binary envelope binds the exact challenge and preserves 1–283 UTF-8
 password bytes without normalization. Discovery is not authorization. Admin MFA
 still applies. Do not log password envelopes, tokens, codes or raw auth bodies.
 Reset uses its own discovery; never substitute an InitLogin challenge or
-automatically retry code delivery/password mutation. This preview is not a
-production availability or NIST/FIPS certification claim.
+automatically retry code delivery/password mutation. This feature does not establish
+production availability or NIST/FIPS certification.
