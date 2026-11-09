@@ -1,6 +1,6 @@
 # ISECure C# Client — Experimental
 
-**.NET 10 · `0.1.1-preview.1` · MIT**
+**.NET 10 · `0.2.0-preview.1` · MIT**
 
 Register an account, log in with SMS/TOTP, discover certificates, register a PGP public
 key, and list, upload or download bank files. Each `ISECureClient` owns one account
@@ -151,7 +151,7 @@ Replace `/path/to/isecure-cs-client` with your clone location. Import `ISECure` 
 `ISECure.Authentication`; response models are in `ISECure.Models`. The complete
 quickstart above can replace a console application's `Program.cs`.
 
-Download the `.nupkg` asset from the [0.1.1-preview.1 GitHub release](https://github.com/isecurefi/isecure-cs-client/releases/tag/v0.1.1-preview.1)
+Download the `.nupkg` asset from the [0.2.0-preview.1 GitHub release](https://github.com/isecurefi/isecure-cs-client/releases/tag/v0.2.0-preview.1)
 into a local package directory. NuGet.org publication remains deferred. You can also
 build the package from the SDK root:
 
@@ -162,7 +162,7 @@ dotnet pack src/ISECure.Client -c Release -o artifacts
 Then from your application directory:
 
 ```sh
-dotnet add package ISECure.Client --version 0.1.1-preview.1 --source /path/to/isecure-cs-client/artifacts
+dotnet add package ISECure.Client --version 0.2.0-preview.1 --source /path/to/isecure-cs-client/artifacts
 ```
 
 The package includes XML documentation for IntelliSense.
@@ -210,3 +210,40 @@ package remains dependency-free. See [contract generation](docs/generation.md),
 [Operator-only live qualification](docs/qualification.md) is separate from normal
 SDK use and requires AWS access. CI runs the unit tests and offline signing checks;
 it never provisions accounts or sends payments.
+
+
+## Opt-in password profile (gpgtest)
+
+Qualification (2026-11-08): this implementation passed local checks and
+bounded hosted registration/login tests on ordinary gpgtest, including Admin MFA
+and 283-byte UTF-8 passwords. RSA-3072 and RSA-4096 login were exercised.
+The stronger profile is currently available on gpgtest only. Existing configuration
+keeps legacy authentication for production; SDK installation does not activate
+the new profile.
+
+Additional qualification (2026-11-09): this SDK passed Data/Admin TOTP login,
+reset initialization and invalid reset-code rejection against gpgtest Login 28.
+The reset reached Cognito and was refused with CodeMismatchException. Login also
+passed after an operator-managed synthetic password change. That change is not
+a public password-reset test: successful reset with a delivered code remains
+unqualified. Operator-confirmed email/phone attributes do not prove delivery.
+
+This source adds `password-rsa-oaep-sha256-v1` on existing v2 routes. Availability
+is environment-specific: the SDK requires matching server discovery and never
+falls back if an older server ignores the selector. Existing configuration keeps
+the legacy profile. After server policy activation, new tenants must select the
+new profile; grandfathered tenants can use either profile, including new accounts.
+
+Pass `encryptionProfile: PasswordProfiles.RsaOaepSha256V1` as a named optional
+argument to `ClientOptions`. `RegisterAsync` and `LoginAsync` then discover and
+use the new key. Use `InitPasswordResetAsync()` followed by
+`ResetPasswordAsync(code, newPassword)`; the client retains reset discovery only
+in memory.
+
+The profile uses direct RSA-3072/4096 OAEP with SHA-256/MGF1-SHA-256 and an empty
+label. The binary envelope binds the exact challenge and preserves 1–283 UTF-8
+password bytes without normalization. Discovery is not authorization. Admin MFA
+still applies. Do not log password envelopes, tokens, codes or raw auth bodies.
+Reset uses its own discovery; never substitute an InitLogin challenge or
+automatically retry code delivery/password mutation. This feature does not establish
+production availability or NIST/FIPS certification.

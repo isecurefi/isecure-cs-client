@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0-preview.1 — 2026-11-09
+
+- Add explicit opt-in v2 password-profile registration, login and reset helpers.
+- Preserve legacy authentication defaults and Admin MFA.
+- Stronger-profile server availability is currently gpgtest only.
+- Distribute the NuGet package through the GitHub release; NuGet.org remains deferred.
+
 ## 0.1.1-preview.1 — 2026-10-23
 
 - Preserve optional inline Base64 `Content` from UploadFile responses.
